@@ -1,0 +1,20 @@
+{"timestamp":"00:00:19.315","source":"Server","level":"LOG","message":"- Cache Components enabled"}
+{"timestamp":"00:00:19.315","source":"Server","level":"LOG","message":"- Partial Prefetching enabled"}
+{"timestamp":"00:00:19.316","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:22.348","source":"Server","level":"LOG","message":"○ Compiling / ..."}
+{"timestamp":"00:00:25.191","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:04:35.981","source":"Server","level":"WARN","message":"⚠ Fast Refresh had to perform a full reload when ./app/page.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload"}
+{"timestamp":"00:04:36.271","source":"Server","level":"LOG","message":"✓ Compiled in 61ms"}
+{"timestamp":"00:04:36.420","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:04:40.423","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:09:20.824","source":"Server","level":"WARN","message":"⚠ Fast Refresh had to perform a full reload when ./app/page.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload"}
+{"timestamp":"00:09:21.107","source":"Server","level":"LOG","message":"✓ Compiled in 50ms"}
+{"timestamp":"00:09:21.297","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:12:53.237","source":"Server","level":"LOG","message":"✓ Compiled in 31ms"}
+{"timestamp":"00:12:57.548","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:13:55.596","source":"Server","level":"LOG","message":"✓ Compiled in 41ms"}
+{"timestamp":"00:13:58.723","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:16:25.789","source":"Server","level":"LOG","message":"✓ Compiled in 30ms"}
+{"timestamp":"00:16:28.815","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:19:01.419","source":"Server","level":"LOG","message":"✓ Compiled in 22ms"}
+{"timestamp":"00:25:42.456","source":"Server","level":"LOG","message":"✓ Compiled in 31ms"}
