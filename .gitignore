@@ -1,1 +1,23 @@
 node_modules
+
+# Python / FastAPI Backend Rules
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Python packaging & IDE
+*.egg-info/
+dist/
+.mypy_cache/
