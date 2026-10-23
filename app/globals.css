@@ -1,26 +1,315 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------ *
+ * Design tokens
+ *
+ * A restrained, print-inspired palette: warm paper, ink, one marine
+ * accent, and a four-band risk ramp. Deliberately low-chroma so the
+ * data is the loudest thing on the page.
+ * ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f7f6f2;
+  --paper-2: #efece4;
+  --surface: #ffffff;
+  --surface-2: #f3f1ea;
+  --surface-3: #e9e5da;
+
+  --ink: #14171a;
+  --ink-2: #3d444b;
+  --muted: #616b74;
+  --muted-dim: #8a929a;
+
+  --rule: #d6d1c4;
+  --rule-soft: #e5e1d6;
+
+  --accent: #1b4f72;
+  --accent-ink: #123a55;
+
+  /* risk ramp — every value passes AA on white */
+  --risk-0: #2c7150;
+  --risk-1: #856a1c;
+  --risk-2: #9a5320;
+  --risk-3: #962a26;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-public-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-serif: var(--font-source-serif);
+  --color-accent: var(--accent);
+  --color-risk-0: var(--risk-0);
+  --color-risk-1: var(--risk-1);
+  --color-risk-2: var(--risk-2);
+  --color-risk-3: var(--risk-3);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--paper);
+  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-public-sans), "Public Sans", system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #d7e3ec;
+  color: var(--accent-ink);
+}
+
+/* ------------------------------------------------------------------ *
+ * Typography
+ * ------------------------------------------------------------------ */
+.font-display {
+  font-family: var(--font-source-serif), "Source Serif 4", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.font-mono-code {
+  font-family: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small caps-style label used for metadata and column headers. */
+.label {
+  font-family: var(--font-plex-mono), "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------------ *
+ * Imagery
+ * ------------------------------------------------------------------ */
+/* Soft photographic backdrop. Sits behind content, never interactive. */
+.backdrop-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.backdrop-img > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Paper wash so text stays legible over a photographic backdrop. */
+.wash-paper {
+  background: linear-gradient(
+    to bottom,
+    rgba(247, 246, 242, 0.55) 0%,
+    rgba(247, 246, 242, 0.82) 42%,
+    rgba(247, 246, 242, 0.97) 100%
+  );
+}
+
+.wash-left {
+  background: linear-gradient(
+    to right,
+    rgba(247, 246, 242, 0.97) 0%,
+    rgba(247, 246, 242, 0.9) 38%,
+    rgba(247, 246, 242, 0.55) 72%,
+    rgba(247, 246, 242, 0.35) 100%
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * Atmosphere — drifting cloud banks composited over a photograph.
+ *
+ * Two gradient fields (one lightened, one shadowed) rather than a blurred
+ * bitmap: the gradients are soft by construction, so animating them costs a
+ * GPU transform and nothing else. GSAP owns the slow drift.
+ * ------------------------------------------------------------------ */
+.cloud-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cloud-bank {
+  position: absolute;
+  inset: -26% -32%;
+  display: block;
+  will-change: transform;
+}
+
+.cloud-bank--lit {
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  background-image:
+    radial-gradient(
+      38% 42% at 18% 32%,
+      rgba(255, 255, 255, 0.62) 0%,
+      rgba(255, 255, 255, 0) 62%
+    ),
+    radial-gradient(
+      26% 30% at 40% 46%,
+      rgba(250, 252, 253, 0.5) 0%,
+      rgba(255, 255, 255, 0) 66%
+    ),
+    radial-gradient(
+      30% 34% at 64% 26%,
+      rgba(255, 255, 255, 0.46) 0%,
+      rgba(255, 255, 255, 0) 60%
+    ),
+    radial-gradient(
+      42% 38% at 84% 44%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0) 64%
+    );
+}
+
+.cloud-bank--shade {
+  opacity: 0.72;
+  mix-blend-mode: multiply;
+  background-image:
+    radial-gradient(
+      36% 40% at 28% 62%,
+      rgba(52, 62, 70, 0.32) 0%,
+      rgba(52, 62, 70, 0) 64%
+    ),
+    radial-gradient(
+      30% 34% at 52% 38%,
+      rgba(52, 62, 70, 0.24) 0%,
+      rgba(52, 62, 70, 0) 60%
+    ),
+    radial-gradient(
+      40% 36% at 76% 58%,
+      rgba(52, 62, 70, 0.28) 0%,
+      rgba(52, 62, 70, 0) 66%
+    );
+}
+
+/* Holds the banks together as one air mass instead of separate blobs. */
+.cloud-veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    70% 60% at 62% 40%,
+    rgba(247, 246, 242, 0.16),
+    rgba(247, 246, 242, 0) 72%
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * Motion
+ *
+ * Entrances and drifts are driven in JavaScript — Framer Motion in
+ * components/motion.tsx, GSAP in components/Atmosphere.tsx — so this file
+ * only carries the fallback. Both libraries check the same media query.
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Focus — WCAG 2.2 AA
+ * ------------------------------------------------------------------ */
+:where(a, button, [tabindex], input, select, summary):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Utilities
+ * ------------------------------------------------------------------ */
+.accent-bg {
+  background-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+.accent-text {
+  color: var(--accent) !important;
+}
+
+.accent-border {
+  border-color: var(--accent) !important;
+}
+
+.hatch-nodata {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(20, 23, 26, 0.06) 0 3px,
+    transparent 3px 8px
+  );
+}
+
+.link-quiet {
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 150ms ease, color 150ms ease;
+}
+
+.link-quiet:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ *
+ * Leaflet theming
+ *
+ * leaflet.css is imported from the MapPanel client component, so it is
+ * emitted after this file. Selectors are doubled up to raise specificity
+ * so the pale theme wins regardless of stylesheet order.
+ * ------------------------------------------------------------------ */
+.leaflet-container.leaflet-container {
+  background: #eae7dd;
+  font-family: var(--font-plex-mono), "IBM Plex Mono", monospace;
+}
+
+.leaflet-container.leaflet-container .leaflet-tooltip.fg-tooltip {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.leaflet-container.leaflet-container .leaflet-tooltip.fg-tooltip::before {
+  display: none;
+}
+
+.leaflet-container.leaflet-container .leaflet-bar a,
+.leaflet-container.leaflet-container .leaflet-bar a:hover {
+  background: #ffffff;
+  color: var(--ink);
+  border-color: var(--rule);
+}
+
+.leaflet-container.leaflet-container .leaflet-bar a:hover {
+  background: var(--surface-2);
+}
+
+.leaflet-container.leaflet-container .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--muted-dim);
 }

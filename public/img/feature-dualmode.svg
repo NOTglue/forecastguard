@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" width="720" height="460" role="img" aria-label="The modern web console beside the retro telemetry console"><rect width="720" height="460" fill="#f7f6f2"/>
+
+    <!-- web panel -->
+    <rect x="34" y="42" width="300" height="376" fill="#ffffff" stroke="#c9c4b6" stroke-width="1"/>
+    <text x="56" y="86" font-family="'Source Serif 4',Georgia,serif" font-size="26" fill="#14171a">Web console</text>
+    <text x="56" y="107" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="1.2" fill="#6f7a83">DASHBOARD / MAP / TABLE</text>
+    <line x1="56" y1="124" x2="312" y2="124" stroke="#ddd8cb" stroke-width="1"/>
+    <rect x="56" y="142" width="256" height="96" fill="#efece4" stroke="#ddd8cb" stroke-width="1"/>
+    <path d="M 72 214 L 116 186 L 160 202 L 204 168 L 248 182 L 296 156" fill="none" stroke="#1b4f72" stroke-width="2"/>
+    <rect x="56" y="256" width="120" height="58" fill="#efece4" stroke="#ddd8cb" stroke-width="1"/>
+    <rect x="192" y="256" width="120" height="58" fill="#efece4" stroke="#ddd8cb" stroke-width="1"/>
+    <text x="56" y="356" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="1.1" fill="#6f7a83">DAY 1–10 SCRUBBER</text>
+
+    <!-- retro panel -->
+    <rect x="376" y="42" width="310" height="376" fill="#c3c3c3" stroke="#7a7a7a" stroke-width="1"/>
+    <rect x="376" y="42" width="310" height="26" fill="#243a63"/>
+    <text x="388" y="60" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#ffffff">ForecastGuard_v2.exe</text>
+    <rect x="390" y="80" width="282" height="20" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.75"/>
+    <text x="397" y="94" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#333">C:\FORECASTGUARD\</text>
+    <rect x="390" y="110" width="282" height="140" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.75"/>
+    <path d="M 406 220 L 448 190 L 490 206 L 532 164 L 574 178 L 656 146" fill="none" stroke="#243a63" stroke-width="2"/>
+    <rect x="390" y="260" width="282" height="76" fill="#c3c3c3" stroke="#7a7a7a" stroke-width="0.75"/>
+    <rect x="398" y="270" width="120" height="13" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.75"/>
+    <rect x="398" y="289" width="120" height="13" fill="#ffffff" stroke="#7a7a7a" stroke-width="0.75"/>
+    <rect x="398" y="308" width="120" height="13" fill="#243a63" stroke="#7a7a7a" stroke-width="0.75"/>
+    <text x="390" y="356" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="1.1" fill="#3a3a3a">RETRO TELEMETRY CONSOLE</text></svg>

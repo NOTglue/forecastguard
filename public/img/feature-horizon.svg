@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" width="720" height="460" role="img" aria-label="Bar chart of bust probability across ten lead days"><rect width="720" height="460" fill="#f7f6f2"/>
+    <line x1="58" y1="376" x2="686" y2="376" stroke="#ddd8cb" stroke-width="1"/>
+      <text x="48" y="379" text-anchor="end" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#6f7a83">0</text><line x1="58" y1="300.5" x2="686" y2="300.5" stroke="#ddd8cb" stroke-width="1"/>
+      <text x="48" y="303.5" text-anchor="end" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#6f7a83">25</text><line x1="58" y1="225" x2="686" y2="225" stroke="#ddd8cb" stroke-width="1"/>
+      <text x="48" y="228" text-anchor="end" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#6f7a83">50</text><line x1="58" y1="149.5" x2="686" y2="149.5" stroke="#ddd8cb" stroke-width="1"/>
+      <text x="48" y="152.5" text-anchor="end" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#6f7a83">75</text><line x1="58" y1="74" x2="686" y2="74" stroke="#ddd8cb" stroke-width="1"/>
+      <text x="48" y="77" text-anchor="end" font-family="'IBM Plex Mono',monospace" font-size="9" fill="#6f7a83">100</text>
+    <rect x="76.4" y="270" width="26" height="106" fill="#4a7fa5" opacity="0.85" rx="1"/>
+        <text x="89.4" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D1</text><rect x="139.2" y="225" width="26" height="151" fill="#9a5320" opacity="0.85" rx="1"/>
+        <text x="152.2" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D2</text><rect x="202" y="159" width="26" height="217" fill="#962a26" opacity="0.85" rx="1"/>
+        <text x="215" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D3</text><rect x="264.8" y="92" width="26" height="284" fill="#962a26" opacity="0.85" rx="1"/>
+        <text x="277.8" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D4</text><rect x="327.6" y="177" width="26" height="199" fill="#9a5320" opacity="0.85" rx="1"/>
+        <text x="340.6" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D5</text><rect x="390.4" y="240" width="26" height="136" fill="#9a5320" opacity="0.85" rx="1"/>
+        <text x="403.4" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D6</text><rect x="453.2" y="285" width="26" height="91" fill="#4a7fa5" opacity="0.85" rx="1"/>
+        <text x="466.2" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D7</text><rect x="516" y="310" width="26" height="66" fill="#4a7fa5" opacity="0.85" rx="1"/>
+        <text x="529" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D8</text><rect x="578.8" y="231" width="26" height="145" fill="#9a5320" opacity="0.85" rx="1"/>
+        <text x="591.8" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D9</text><rect x="641.6" y="201" width="26" height="175" fill="#9a5320" opacity="0.85" rx="1"/>
+        <text x="654.6" y="394" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#6f7a83">D10</text>
+    <line x1="58" y1="194.8" x2="686" y2="194.8" stroke="#962a26" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <text x="686" y="187.8" text-anchor="end" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="0.6" fill="#962a26">REVIEW THRESHOLD 60%</text>
+    <line x1="58" y1="376" x2="686" y2="376" stroke="#3d444b" stroke-opacity="0.5" stroke-width="1"/>
+    <text x="58" y="420" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="1" fill="#6f7a83">BUST PROBABILITY (%) BY LEAD DAY</text></svg>
