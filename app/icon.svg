@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="ForecastGuard icon"><rect width="64" height="64" rx="8" fill="#f7f6f2"/>
-    <path d="M 14 42 A 20 20 0 0 1 50 42" fill="none" stroke="#1b4f72" stroke-width="3.4" stroke-linecap="round"/>
-    <path d="M 32 42 L 42 20" stroke="#962a26" stroke-width="2.6" stroke-linecap="round"/>
-    <circle cx="32" cy="42" r="3.2" fill="#14171a"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" shape-rendering="crispEdges" aria-label="ForecastGuard icon"><rect width="64" height="64" fill="#f3ead7"/>
+    <rect x="4" y="4" width="56" height="56" fill="none" stroke="#17201d" stroke-width="4"/>
+    <path d="M 12 44 A 20 20 0 0 1 52 44" fill="none" stroke="#0c6b5c" stroke-width="5" shape-rendering="crispEdges"/>
+    <path d="M 20 44 A 12 12 0 0 1 44 44" fill="none" stroke="#0c6b5c" stroke-width="4" shape-rendering="crispEdges"/>
+    <rect x="30" y="18" width="4" height="26" fill="#a9221d"/>
+    <rect x="30" y="16" width="12" height="4" fill="#a9221d"/>
+    <rect x="30" y="40" width="8" height="8" fill="#17201d"/></svg>

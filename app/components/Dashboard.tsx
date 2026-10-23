@@ -12,9 +12,8 @@ import {
 import ForecastChart from "./ForecastChart";
 import MapPanel from "./MapPanel";
 import { RunStrip, StatusStrip } from "./Chrome";
-import { CloudField } from "./Atmosphere";
 import { AnimatedNumber, EASE } from "./motion";
-import { Backdrop, Caveat, Chip, DaySelector, MetricToggle, Panel, PanelHeader, ProgressBar } from "./ui";
+import { Caveat, Chip, DaySelector, MetricToggle, Panel, PanelHeader, ProgressBar, Backdrop } from "./ui";
 
 type Props = {
   day: number;
@@ -108,20 +107,37 @@ export default function Dashboard({
       >
         {/* Control bar */}
         <Panel className="relative overflow-hidden">
-          <Backdrop src="/img/bg-strip.jpg" opacity={1} position="50% 42%" wash="none" />
-          <CloudField opacity={0.45} />
-          <div className="absolute inset-0 z-[2] bg-[linear-gradient(100deg,rgba(255,255,255,.97)_0%,rgba(255,255,255,.93)_38%,rgba(255,255,255,.6)_100%)]" />
-          <span
-            className="absolute inset-x-0 top-0 z-[5] h-[3px] bg-[var(--accent)]"
+          <Backdrop
+            src="/img/bg-strip-pix.jpg"
+            opacity={1}
+            position="50% 42%"
+            wash="none"
+            pixelated
+            pixelAnim
+          />
+          <div
+            className="absolute inset-0 z-[1] bg-[linear-gradient(100deg,rgba(251,246,233,.97)_0%,rgba(251,246,233,.93)_38%,rgba(251,246,233,.58)_100%)]"
             aria-hidden="true"
           />
-          <div className="relative z-[4] px-5 py-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div className="absolute inset-0 z-[2] pixel-grid-bg opacity-70" aria-hidden="true" />
+          <div
+            className="absolute -right-20 -top-24 z-[2] h-72 w-72 radar-rings opacity-80"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 z-[2] pixel-dither-accent opacity-20" aria-hidden="true" />
+          <span
+            className="absolute inset-x-0 top-0 z-[5] h-2 bg-[var(--accent)]"
+            aria-hidden="true"
+          />
+          <div className="relative z-[4] px-5 pb-4 pt-5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
             <div className="min-w-0">
-              <div className="label text-[var(--accent)]">Web dashboard</div>
-              <h1 className="font-display mt-1 text-[1.55rem] sm:text-[1.8rem] leading-tight text-[var(--ink)] truncate">
+              <div className="font-pixel text-[9px] uppercase text-[var(--accent)]">
+                Field terminal // dashboard
+              </div>
+              <h1 className="font-display mt-1.5 text-[1.5rem] sm:text-[1.75rem] uppercase leading-[1.1] text-[var(--ink)] truncate">
                 {zone.id} · {zone.name}
               </h1>
-              <div className="mt-2">
+              <div className="mt-2.5">
                 <RunStrip day={day} regime={current.regime} />
               </div>
             </div>
@@ -153,18 +169,18 @@ export default function Dashboard({
                   onClick={() => onSelect(z.id)}
                   aria-pressed={active}
                   title={`${z.name} — ${info.hasData ? `${info.bust}% bust` : "no data"}`}
-                  className={`px-1.5 py-1.5 font-mono-code text-[10px] border truncate cursor-pointer transition-colors ${
+                  className={`px-1 py-1.5 font-mono-code text-[9px] border truncate cursor-pointer transition-colors ${
                     active
                       ? "accent-bg font-medium"
                       : info.hasData
-                        ? "bg-[var(--surface)] text-[var(--muted)] border-[var(--rule-soft)] hover:border-[var(--rule)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
-                        : "hatch-nodata bg-[var(--surface-2)] text-[var(--muted-dim)] border-[var(--rule-soft)]"
+                        ? "bg-[var(--surface)] text-[var(--muted)] border-[var(--ink)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
+                        : "hatch-nodata bg-[var(--surface-2)] text-[var(--muted-dim)] border-[var(--ink)]"
                   }`}
                   style={
                     active
                       ? undefined
                       : info.hasData
-                        ? { borderLeftColor: TONE_COLOR[t], borderLeftWidth: 2 }
+                        ? { borderLeftColor: TONE_COLOR[t], borderLeftWidth: 3 }
                         : undefined
                   }
                 >
@@ -183,18 +199,18 @@ export default function Dashboard({
               title={view === "map" ? "Spatial map" : "Ranked table"}
               meta={`Day ${day} · ${metric}`}
               right={
-                <div className="inline-flex border border-[var(--rule)]">
+                <div className="inline-flex border-2 border-[var(--ink)]">
                   {(["map", "table"] as const).map((v, i) => (
                     <button
                       key={v}
                       type="button"
                       onClick={() => setView(v)}
                       aria-pressed={view === v}
-                      className={`font-mono-code text-[10px] uppercase tracking-[0.06em] px-2.5 py-1 cursor-pointer transition-colors capitalize ${
+                      className={`font-pixel text-[9px] uppercase tracking-[0.02em] px-2.5 py-1.5 cursor-pointer transition-colors capitalize ${
                         view === v
-                          ? "accent-bg font-medium"
-                          : "text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
-                      } ${i > 0 ? "border-l border-[var(--rule)]" : ""}`}
+                          ? "accent-bg font-bold"
+                          : "bg-[var(--surface)] text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
+                      } ${i > 0 ? "border-l-2 border-[var(--ink)]" : ""}`}
                     >
                       {v}
                     </button>
@@ -322,7 +338,7 @@ export default function Dashboard({
             </AnimatePresence>
 
             {/* Summary strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-[var(--rule-soft)] border-t border-[var(--rule)]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-[var(--rule-soft)] border-t-2 border-[var(--ink)]">
               {[
                 ["Zone", zone.id],
                 ["Raw → corrected", `${current.raw} → ${current.corr} mm`],
@@ -359,27 +375,24 @@ export default function Dashboard({
                   {EXCEEDANCE_LEVELS.map((l) => (
                     <div
                       key={l.key}
-                      className="border border-[var(--rule-soft)] bg-[var(--surface-2)] p-3 text-center"
+                      className="border border-[var(--ink)] bg-[var(--surface-2)] p-3 text-center shadow-[2px_2px_0_rgba(23,32,29,.12)]"
                     >
                       <div className="font-mono-code text-[10px] text-[var(--muted)]">
                         {l.label}
                       </div>
-                      <div className="mt-1 font-display text-[1.3rem] leading-none text-[var(--ink)] tnum">
+                      <div className="mt-1 font-display text-[1.4rem] leading-none text-[var(--ink)] tnum">
                         {current.hasData ? (
                           <AnimatedNumber value={current[l.key]} suffix="%" />
                         ) : (
                           "—"
                         )}
                       </div>
-                      <div className="mt-2 h-[3px] w-full bg-[var(--rule-soft)]">
-                        <motion.div
-                          className="h-full bg-[var(--accent)]"
-                          initial={reduce ? false : { width: 0 }}
-                          animate={{ width: current.hasData ? `${current[l.key]}%` : 0 }}
-                          transition={{ duration: 0.6, ease: EASE }}
-                        />
-                      </div>
-                      <div className="mt-1 font-mono-code text-[9px] uppercase tracking-[0.05em] text-[var(--muted-dim)]">
+                      <ProgressBar
+                        value={current.hasData ? current[l.key] : 0}
+                        color="var(--accent)"
+                        className="mt-2"
+                      />
+                      <div className="mt-1.5 font-pixel text-[7px] uppercase tracking-[0.02em] text-[var(--muted-dim)]">
                         {l.caption}
                       </div>
                     </div>
@@ -432,10 +445,10 @@ export default function Dashboard({
                   aria-pressed={active}
                   className={`p-2.5 text-left border transition-colors cursor-pointer ${
                     active
-                      ? "accent-bg"
+                      ? "accent-bg border-[var(--ink)]"
                       : d.hasData
-                        ? "bg-[var(--surface)] border-[var(--rule-soft)] text-[var(--muted)] hover:border-[var(--rule)] hover:bg-[var(--surface-2)]"
-                        : "hatch-nodata bg-[var(--surface-2)] border-[var(--rule-soft)] text-[var(--muted-dim)]"
+                        ? "bg-[var(--surface)] border-[var(--ink)] text-[var(--muted)] hover:bg-[var(--surface-2)]"
+                        : "hatch-nodata bg-[var(--surface-2)] border-[var(--ink)] text-[var(--muted-dim)]"
                   }`}
                 >
                   <div className="flex items-baseline justify-between font-mono-code text-[10px]">
@@ -451,7 +464,7 @@ export default function Dashboard({
                       </div>
                       <ProgressBar
                         value={d.bust}
-                        color={active ? "#ffffff" : TONE_COLOR[t]}
+                        color={active ? "var(--paper)" : TONE_COLOR[t]}
                         className="mt-2"
                       />
                     </>

@@ -6,7 +6,7 @@ import { useBackdropParallax } from "./Atmosphere";
 import { EASE } from "./motion";
 
 /* ------------------------------------------------------------------ *
- * Panel — a plain white surface separated by a hairline.
+ * Panel — a hard-edged instrument card.
  * ------------------------------------------------------------------ */
 export function Panel({
   children,
@@ -19,17 +19,14 @@ export function Panel({
   as?: "div" | "section" | "article" | "aside";
 } & React.HTMLAttributes<HTMLElement>) {
   return (
-    <Tag
-      className={`bg-[var(--surface)] border border-[var(--rule)] ${className}`}
-      {...rest}
-    >
+    <Tag className={`pixel-panel ${className}`} {...rest}>
       {children}
     </Tag>
   );
 }
 
 /* ------------------------------------------------------------------ *
- * PanelHeader — quiet caption bar.
+ * PanelHeader — pixel caption bar.
  * ------------------------------------------------------------------ */
 export function PanelHeader({
   title,
@@ -41,13 +38,17 @@ export function PanelHeader({
   right?: ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-[var(--rule-soft)]">
-      <div className="flex items-baseline gap-3 min-w-0">
-        <span className="font-mono-code text-[10px] uppercase tracking-[0.11em] text-[var(--ink)] truncate">
+    <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b-2 border-[var(--ink)] bg-[var(--surface-2)]">
+      <div className="flex items-baseline gap-2.5 min-w-0">
+        <span
+          className="inline-block h-2 w-2 shrink-0 translate-y-[-1px] bg-[var(--accent)]"
+          aria-hidden="true"
+        />
+        <span className="font-pixel text-[10px] uppercase tracking-[0.03em] text-[var(--ink)] truncate">
           {title}
         </span>
         {meta ? (
-          <span className="font-mono-code text-[10px] tracking-[0.06em] text-[var(--muted-dim)] truncate">
+          <span className="font-mono-code text-[10px] tracking-[0.02em] text-[var(--muted)] truncate">
             {meta}
           </span>
         ) : null}
@@ -58,7 +59,7 @@ export function PanelHeader({
 }
 
 /* ------------------------------------------------------------------ *
- * Eyebrow — a label with a leading rule, no pill.
+ * Eyebrow — pixel label with a hard leading block.
  * ------------------------------------------------------------------ */
 export function Eyebrow({
   children,
@@ -70,15 +71,15 @@ export function Eyebrow({
   const reduce = useReducedMotion();
   return (
     <span
-      className={`inline-flex items-center gap-2.5 font-mono-code text-[10px] uppercase tracking-[0.14em] text-[var(--muted)] ${className}`}
+      className={`inline-flex items-center gap-2.5 font-pixel text-[10px] uppercase tracking-[0.05em] text-[var(--muted)] ${className}`}
     >
       <motion.span
-        className="h-px w-7 origin-left bg-[var(--accent)]"
+        className="h-2 w-2 bg-[var(--accent)]"
         aria-hidden="true"
-        initial={reduce ? false : { scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
+        initial={reduce ? false : { scale: 0 }}
+        whileInView={{ scale: 1 }}
         viewport={{ once: true, amount: 0.6 }}
-        transition={{ duration: 0.65, ease: EASE }}
+        transition={{ duration: 0.3, ease: EASE }}
       />
       {children}
     </span>
@@ -86,7 +87,7 @@ export function Eyebrow({
 }
 
 /* ------------------------------------------------------------------ *
- * SectionHeader — editorial section heading.
+ * SectionHeader — pixel editorial section heading.
  * ------------------------------------------------------------------ */
 export function SectionHeader({
   title,
@@ -104,11 +105,11 @@ export function SectionHeader({
       className={`flex flex-col lg:flex-row lg:items-end justify-between gap-5 ${className}`}
     >
       <div className="max-w-2xl">
-        <h2 className="font-display text-[1.75rem] sm:text-[2.1rem] leading-[1.12] text-[var(--ink)]">
+        <h2 className="font-display text-[1.65rem] sm:text-[2rem] leading-[1.05] text-[var(--ink)]">
           {title}
         </h2>
         {lede ? (
-          <p className="mt-2.5 text-[15px] leading-relaxed text-[var(--muted)] max-w-xl">
+          <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--muted)] max-w-xl">
             {lede}
           </p>
         ) : null}
@@ -119,7 +120,7 @@ export function SectionHeader({
 }
 
 /* ------------------------------------------------------------------ *
- * Stat — labelled figure.
+ * Stat — labelled pixel figure.
  * ------------------------------------------------------------------ */
 export function Stat({
   label,
@@ -154,15 +155,15 @@ export function Stat({
 }
 
 /* ------------------------------------------------------------------ *
- * Chip — small tinted label using the risk ramp.
+ * Chip — small stamped label.
  * ------------------------------------------------------------------ */
 const CHIP: Record<string, string> = {
-  muted: "text-[var(--muted)] bg-[var(--surface-2)] border-[var(--rule-soft)]",
-  accent: "text-[var(--accent)] bg-[#eef3f7] border-[#cfdde8]",
-  ok: "text-[var(--risk-0)] bg-[#eaf1ec] border-[#c9dbd1]",
-  cool: "text-[#23596f] bg-[#e9f0f4] border-[#c6d9e2]",
-  warn: "text-[var(--risk-1)] bg-[#f6f1e2] border-[#e0d5b6]",
-  danger: "text-[var(--risk-3)] bg-[#f7eae8] border-[#e3c7c3]",
+  muted: "text-[var(--muted)] bg-[var(--surface-2)] border-[var(--ink)]",
+  accent: "text-[var(--accent-ink)] bg-[#d9ede6] border-[var(--ink)]",
+  ok: "text-[var(--risk-0)] bg-[#dbeada] border-[var(--ink)]",
+  cool: "text-[#1e5b6e] bg-[#d8e8ee] border-[var(--ink)]",
+  warn: "text-[var(--risk-1)] bg-[#f6e6bd] border-[var(--ink)]",
+  danger: "text-[var(--risk-3)] bg-[#f3d6cf] border-[var(--ink)]",
 };
 
 export function Chip({
@@ -176,7 +177,7 @@ export function Chip({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-mono-code text-[9px] uppercase tracking-[0.09em] border px-1.5 py-0.5 ${CHIP[tone]} ${className}`}
+      className={`inline-flex items-center gap-1.5 font-pixel text-[9px] uppercase tracking-[0.03em] border px-1.5 py-1 shadow-[1px_1px_0_var(--ink)] ${CHIP[tone]} ${className}`}
     >
       {children}
     </span>
@@ -184,7 +185,7 @@ export function Chip({
 }
 
 /* ------------------------------------------------------------------ *
- * DaySelector — Day 1..10. Underline on the active day.
+ * DaySelector — Day 1..10. The active day is a filled block.
  * ------------------------------------------------------------------ */
 export function DaySelector({
   day,
@@ -204,7 +205,7 @@ export function DaySelector({
     <div
       role="group"
       aria-label="Select forecast lead day"
-      className={`inline-flex flex-wrap border border-[var(--rule)] bg-[var(--surface)] ${className}`}
+      className={`inline-flex flex-wrap border-2 border-[var(--ink)] bg-[var(--surface)] shadow-[3px_3px_0_rgba(23,32,29,.18)] ${className}`}
     >
       {Array.from({ length: 10 }, (_, i) => i + 1).map((d, i) => {
         const active = d === day;
@@ -214,11 +215,11 @@ export function DaySelector({
             type="button"
             onClick={() => onChange(d)}
             aria-pressed={active}
-            className={`relative font-mono-code uppercase transition-colors cursor-pointer border-l border-[var(--rule-soft)] first:border-l-0 ${
-              compact ? "text-[10px] px-2 py-1.5" : "text-[11px] px-2.5 py-2"
+            className={`relative font-pixel uppercase transition-colors cursor-pointer border-l border-[var(--rule-soft)] first:border-l-0 ${
+              compact ? "text-[10px] px-2 py-2" : "text-[10px] px-2.5 py-2.5"
             } ${
               active
-                ? "text-white font-semibold"
+                ? "text-[var(--paper)] font-bold"
                 : "text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
             }`}
             style={{ borderLeftWidth: i === 0 ? 0 : 1 }}
@@ -226,16 +227,13 @@ export function DaySelector({
             {/* The selected day is a single element that slides between cells. */}
             {active ? (
               reduce ? (
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 bg-[var(--accent)]"
-                />
+                <span aria-hidden="true" className="absolute inset-0 bg-[var(--accent)]" />
               ) : (
                 <motion.span
                   aria-hidden="true"
                   layoutId={`day-pill-${pillId}`}
                   className="absolute inset-0 bg-[var(--accent)]"
-                  transition={{ type: "spring", stiffness: 420, damping: 36 }}
+                  transition={{ type: "spring", stiffness: 520, damping: 40 }}
                 />
               )
             ) : null}
@@ -260,20 +258,23 @@ export function MetricToggle({
   tone?: "modern" | "retro";
 }) {
   const options = ["RAW", "CORR", "BUST"] as const;
+  const retro = tone === "retro";
   return (
     <div
       role="group"
       aria-label="Select metric view"
-      className={`inline-flex items-center font-mono-code text-[10px] ${
-        tone === "retro" ? "text-black" : "text-[var(--muted)]"
+      className={`inline-flex items-center font-pixel text-[10px] ${
+        retro ? "text-[var(--mint)]" : "text-[var(--muted)]"
       }`}
     >
-      <span className="uppercase tracking-[0.1em] mr-2 hidden sm:inline text-[var(--muted-dim)]">
+      <span className="uppercase tracking-[0.05em] mr-2 hidden sm:inline opacity-70">
         Metric
       </span>
       <div
         className={`inline-flex ${
-          tone === "retro" ? "border border-[#7a7a7a]" : "border border-[var(--rule)]"
+          retro
+            ? "border-2 border-[var(--mint-dim)] bg-[#081311]"
+            : "border-2 border-[var(--ink)] bg-[var(--surface)] shadow-[3px_3px_0_rgba(23,32,29,.18)]"
         }`}
       >
         {options.map((m, i) => {
@@ -285,14 +286,20 @@ export function MetricToggle({
               onClick={() => onChange(m)}
               aria-pressed={active}
               className={`uppercase px-2.5 py-1.5 cursor-pointer transition-colors ${
-                tone === "retro"
+                retro
                   ? active
-                    ? "bg-[#243a63] text-white font-semibold"
-                    : "bg-[#c3c3c3] text-black hover:bg-[#d2d2d2]"
+                    ? "bg-[var(--signal)] text-[#1a1200] font-bold"
+                    : "text-[var(--mint-dim)] hover:bg-[#102420] hover:text-[var(--mint)]"
                   : active
-                    ? "accent-bg font-semibold"
+                    ? "accent-bg font-bold"
                     : "bg-[var(--surface)] text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]"
-              } ${i > 0 ? (tone === "retro" ? "border-l border-[#7a7a7a]" : "border-l border-[var(--rule)]") : ""}`}
+              } ${
+                i > 0
+                  ? retro
+                    ? "border-l border-[var(--mint-dim)]"
+                    : "border-l border-[var(--rule-soft)]"
+                  : ""
+              }`}
             >
               {m}
             </button>
@@ -304,7 +311,7 @@ export function MetricToggle({
 }
 
 /* ------------------------------------------------------------------ *
- * ProgressBar — thin meter.
+ * ProgressBar — segmented pixel meter.
  * ------------------------------------------------------------------ */
 export function ProgressBar({
   value,
@@ -319,7 +326,7 @@ export function ProgressBar({
   const reduce = useReducedMotion();
   return (
     <div
-      className={`h-[5px] w-full bg-[var(--surface-3)] overflow-hidden ${className}`}
+      className={`pixel-meter ${className}`}
       role="img"
       aria-label={`${value} percent`}
     >
@@ -330,6 +337,7 @@ export function ProgressBar({
         transition={{ duration: 0.7, ease: EASE }}
         style={{ background: color }}
       />
+      <span className="pixel-meter-segments" aria-hidden="true" />
     </div>
   );
 }
@@ -340,11 +348,11 @@ export function ProgressBar({
 export function DemoBadge({ className = "" }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 border border-[#e0d5b6] bg-[#f6f1e2] text-[var(--risk-1)] px-2 py-0.5 font-mono-code text-[9px] uppercase tracking-[0.1em] font-medium ${className}`}
+      className={`inline-flex items-center gap-1.5 border border-[var(--ink)] bg-[#f6e6bd] text-[var(--risk-1)] px-2 py-1 font-pixel text-[9px] uppercase tracking-[0.03em] shadow-[2px_2px_0_var(--ink)] ${className}`}
       title="All values in this build are synthetic. No live NWP or observation feed is connected."
     >
-      <span className="w-1.5 h-1.5 bg-[var(--risk-1)] inline-block" aria-hidden="true" />
-      Simulated data
+      <span className="w-1.5 h-1.5 bg-[var(--risk-2)] inline-block blink" aria-hidden="true" />
+      Simulated
     </span>
   );
 }
@@ -367,6 +375,55 @@ export function Caveat({
 }
 
 /* ------------------------------------------------------------------ *
+ * WindowFrame — dark title bar over a hard pixel frame.
+ * ------------------------------------------------------------------ */
+export function WindowFrame({
+  title,
+  meta,
+  children,
+  className = "",
+  bodyClassName = "",
+  tone = "dark",
+}: {
+  title: ReactNode;
+  meta?: ReactNode;
+  children: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  tone?: "dark" | "mint";
+}) {
+  return (
+    <div className={`pixel-window ${className}`}>
+      <div
+        className={`pixel-window-bar px-3 py-2 ${
+          tone === "mint" ? "!bg-[var(--accent)] !text-[var(--paper)]" : ""
+        }`}
+      >
+        <span className="flex items-center gap-2 min-w-0 truncate">
+          <span
+            className={`inline-block h-2 w-2 shrink-0 ${
+              tone === "mint" ? "bg-[var(--signal)]" : "bg-[var(--coral)]"
+            } blink`}
+            aria-hidden="true"
+          />
+          <span className="truncate">{title}</span>
+        </span>
+        {meta ? <span className="hidden sm:inline opacity-70 shrink-0">{meta}</span> : null}
+        <span className="flex items-center gap-1 shrink-0" aria-hidden="true">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="inline-block h-2 w-2 border border-current opacity-70"
+            />
+          ))}
+        </span>
+      </div>
+      <div className={bodyClassName}>{children}</div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
  * Backdrop — a non-interactive image layer for section backgrounds.
  * ------------------------------------------------------------------ */
 export function Backdrop({
@@ -376,6 +433,8 @@ export function Backdrop({
   wash = "paper",
   priority = false,
   drift = false,
+  pixelated = false,
+  pixelAnim = false,
   className = "",
 }: {
   src: string;
@@ -383,11 +442,15 @@ export function Backdrop({
   position?: string;
   wash?: "paper" | "left" | "none";
   priority?: boolean;
-  /** Scroll-scrubbed parallax. Reserved for full-bleed photographic backdrops. */
+  /** Scroll-scrubbed parallax. Reserved for full-bleed textured backdrops. */
   drift?: boolean;
+  /** Crisp nearest-neighbour rendering for the pixelated photo backdrops. */
+  pixelated?: boolean;
+  /** Slow stepped pan. Use instead of `drift`; both animate `transform`. */
+  pixelAnim?: boolean;
   className?: string;
 }) {
-  const imgRef = useBackdropParallax(drift);
+  const imgRef = useBackdropParallax(drift && !pixelAnim);
   return (
     <div className={`backdrop-img ${className}`} aria-hidden="true">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -395,6 +458,7 @@ export function Backdrop({
         ref={imgRef}
         src={src}
         alt=""
+        className={`${pixelated ? "pixel-photo" : ""} ${pixelAnim ? "pixel-photo--pan" : ""}`}
         style={{ opacity, objectPosition: position }}
         loading="eager"
         fetchPriority={priority ? "high" : "auto"}

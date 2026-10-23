@@ -90,19 +90,15 @@ for (const f of readdirSync(IMG).filter((x) => /\.jpe?g$/i.test(x)).sort()) {
   );
 }
 
-/* The hero must contain a closed land path with a plausible point count. */
-const hero = readFileSync(resolve(IMG, "hero-atlas.svg"), "utf8");
-const landPath = hero.match(/<path d="M[^"]*?L[^"]*?Z" fill="#e4e0d4"/);
-if (!landPath) {
-  console.log("FAIL  hero-atlas.svg             land silhouette path not found");
-  failures++;
-} else {
-  const pts = (landPath[0].match(/L/g) || []).length;
-  console.log(`ok    hero-atlas.svg             land silhouette: ${pts} vertices`);
-  if (pts < 30) {
-    console.log("        -> silhouette too coarse");
-    failures++;
-  }
+/* The hero maps are rasterised block art: require enough blocks to read as
+ * an actual silhouette rather than a few stray pixels. */
+for (const f of ["hero-pixel.svg", "hero-atlas.svg"]) {
+  const hero = readFileSync(resolve(IMG, f), "utf8");
+  const blocks = (hero.match(/<rect /g) || []).length;
+  console.log(
+    `${blocks >= 200 ? "ok" : "FAIL"}    ${f.padEnd(28)} land blocks: ${blocks}`
+  );
+  if (blocks < 200) failures++;
 }
 
 console.log(failures ? `\n${failures} problem(s) found.` : "\nAll assets valid.");

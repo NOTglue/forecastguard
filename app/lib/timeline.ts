@@ -80,11 +80,11 @@ export function confidenceTone(bustPct: number): "ok" | "cool" | "warn" | "dange
 }
 
 export const TONE_COLOR: Record<string, string> = {
-  ok: "#2c7150",
-  cool: "#2f6d8c",
-  warn: "#856a1c",
-  danger: "#962a26",
-  muted: "#8a929a",
+  ok: "#1d6f47",
+  cool: "#236d7b",
+  warn: "#8a5a09",
+  danger: "#a9221d",
+  muted: "#6e7a71",
 };
 
 /* --- colour helpers ------------------------------------------------- */
@@ -107,15 +107,15 @@ function mix(a: string, b: string, t: number): string {
 
 /** Four-band bust ramp, shared by the map, legend, table and cards. */
 export function bustColor(bustPct: number): string {
-  if (bustPct <= 20) return "#2c7150";
-  if (bustPct <= 40) return "#2f6d8c";
-  if (bustPct <= 60) return "#856a1c";
-  return "#962a26";
+  if (bustPct <= 20) return "#1d6f47";
+  if (bustPct <= 40) return "#236d7b";
+  if (bustPct <= 60) return "#8a5a09";
+  return "#a9221d";
 }
 
-/** Sequential blue ramp for rainfall depth (0–250 mm). */
+/** Sequential marine ramp for rainfall depth (0–250 mm). */
 export function rainColor(mm: number): string {
-  return mix("#e3ebf0", "#1b4f72", Math.min(1, Math.max(0, mm / 230)));
+  return mix("#e4dbc6", "#1f7a86", Math.min(1, Math.max(0, mm / 230)));
 }
 
 export const fmtDelta = (n: number) => `${n > 0 ? "+" : ""}${n}mm`;

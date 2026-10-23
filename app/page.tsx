@@ -39,7 +39,7 @@ export default function ForecastGuardApp() {
       <div className="flex min-h-screen flex-col bg-[var(--paper)] text-[var(--ink)]">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[1000] focus:bg-[var(--accent)] focus:px-3 focus:py-2 focus:font-mono-code focus:text-xs focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[1000] focus:bg-[var(--accent)] focus:px-3 focus:py-2 focus:font-mono-code focus:text-xs focus:text-[var(--paper)]"
         >
           Skip to content
         </a>

@@ -27,12 +27,12 @@ type Props = {
 export default function ForecastChart({ data, variant = "modern", height }: Props) {
   const retro = variant === "retro";
 
-  const axis = retro ? "#333333" : "#8a929a";
-  const rawFill = retro ? "#a8a8a8" : "#d5cfc0";
-  const rawStroke = retro ? "#7a7a7a" : "#c2bba9";
-  const obsStroke = retro ? "#962a26" : "#962a26";
-  const corrStroke = retro ? "#243a63" : "#1b4f72";
-  const gridline = retro ? "rgba(0,0,0,.14)" : "#e5e1d6";
+  const axis = retro ? "#4fbf93" : "#6e7a71";
+  const rawFill = retro ? "rgba(125,252,191,.16)" : "#ded2b8";
+  const rawStroke = retro ? "#2b4a45" : "#6b6152";
+  const obsStroke = retro ? "#ff6b6b" : "#a9221d";
+  const corrStroke = retro ? "#7dfcbf" : "#0c6b5c";
+  const gridline = retro ? "rgba(125,252,191,.12)" : "rgba(23,32,29,.1)";
 
   return (
     <div style={{ width: "100%", height: height ?? (retro ? 190 : 240) }}>
@@ -59,24 +59,25 @@ export default function ForecastChart({ data, variant = "modern", height }: Prop
             contentStyle={
               retro
                 ? {
-                    backgroundColor: "#ffffe1",
-                    borderColor: "#7a7a7a",
+                    backgroundColor: "#081311",
+                    borderColor: "#2b4a45",
                     borderRadius: 0,
                     fontSize: 11,
+                    color: "#7dfcbf",
                     fontFamily: "var(--font-plex-mono), monospace",
                   }
                 : {
-                    backgroundColor: "#ffffff",
-                    borderColor: "#d6d1c4",
+                    backgroundColor: "#fbf6e9",
+                    borderColor: "#17201d",
                     borderRadius: 0,
                     fontSize: 11,
-                    color: "#14171a",
-                    boxShadow: "0 4px 16px rgba(20,23,26,.08)",
+                    color: "#17201d",
+                    boxShadow: "2px 2px 0 #17201d",
                     fontFamily: "var(--font-plex-mono), monospace",
                   }
             }
-            labelStyle={{ color: retro ? "#000" : "#3d444b", fontSize: 10 }}
-            itemStyle={{ color: retro ? "#000" : "#14171a" }}
+            labelStyle={{ color: retro ? "#ffc857" : "#33403a", fontSize: 10 }}
+            itemStyle={{ color: retro ? "#7dfcbf" : "#17201d" }}
             formatter={(value, name) => [`${value ?? "—"} mm`, name]}
             labelFormatter={(l) => `Day ${l}`}
           />
@@ -86,12 +87,12 @@ export default function ForecastChart({ data, variant = "modern", height }: Prop
             name="Raw model"
             fill={rawFill}
             stroke={rawStroke}
-            strokeWidth={retro ? 0 : 1}
+            strokeWidth={1}
             barSize={retro ? 10 : 13}
             isAnimationActive={false}
           />
           <Line
-            type="monotone"
+            type="stepAfter"
             dataKey="corr"
             name="Bias-corrected"
             stroke={corrStroke}
@@ -100,12 +101,12 @@ export default function ForecastChart({ data, variant = "modern", height }: Prop
             isAnimationActive={false}
           />
           <Line
-            type="monotone"
+            type="stepAfter"
             dataKey="obs"
             name="Verifying obs"
             stroke={obsStroke}
             strokeWidth={1.75}
-            strokeDasharray="4 3"
+            strokeDasharray="3 3"
             dot={false}
             connectNulls
             isAnimationActive={false}

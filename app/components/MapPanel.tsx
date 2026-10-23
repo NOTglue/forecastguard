@@ -16,9 +16,9 @@ type Props = {
 };
 
 const TILE_URL = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png";
-const ACCENT = "#1b4f72";
+const ACCENT = "#0c6b5c";
 
-type PaintState = Pick<Props, "metric" | "day" | "selectedId">;
+type PaintState = Pick<Props, "metric" | "day" | "selectedId" | "variant">;
 
 /**
  * Leaflet overlay for the 15 monitored subdivisions.
@@ -39,7 +39,7 @@ export default function MapPanel({
   const mapRef = useRef<LeafletNS.Map | null>(null);
   const layerRef = useRef<Map<string, LeafletNS.Circle>>(new Map());
 
-  const paintState = useRef<PaintState>({ metric, day, selectedId });
+  const paintState = useRef<PaintState>({ metric, day, selectedId, variant });
   const selectRef = useRef(onSelect);
 
   /* keep the click handler current without recreating the map */
@@ -49,7 +49,8 @@ export default function MapPanel({
 
   /* ---- paint every circle from the current control state ------------- */
   const paint = useCallback(() => {
-    const { metric, day, selectedId } = paintState.current;
+    const { metric, day, selectedId, variant } = paintState.current;
+    const retro = variant === "retro";
 
     layerRef.current.forEach((circle, id) => {
       const zone = ZONES.find((z) => z.id === id);
@@ -62,17 +63,29 @@ export default function MapPanel({
       const value = metric === "RAW" ? info.raw : metric === "CORR" ? info.corr : info.bust;
 
       const fill = noData
-        ? "#d9d4c5"
+        ? retro
+          ? "#233b36"
+          : "#d8cbb2"
         : metric === "BUST"
           ? bustColor(value)
           : rainColor(value);
 
       circle.setStyle({
-        color: selected ? ACCENT : noData ? "#8a929a" : "#7d7565",
+        color: selected
+          ? retro
+            ? "#ffc857"
+            : ACCENT
+          : noData
+            ? retro
+              ? "#46615a"
+              : "#9a8f78"
+            : retro
+              ? "#2b4a45"
+              : "#6b6152",
         weight: selected ? 2.5 : 1,
         dashArray: noData ? "4 4" : undefined,
         fillColor: fill,
-        fillOpacity: selected ? 0.62 : noData ? 0.3 : 0.44,
+        fillOpacity: selected ? 0.62 : noData ? 0.24 : 0.42,
       });
 
       const label = noData
@@ -81,9 +94,17 @@ export default function MapPanel({
           ? `${zone.id} · ${value}%`
           : `${zone.id} · ${value} mm`;
 
-      const html = `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;background:#ffffff;color:${
-        selected ? ACCENT : "#14171a"
-      };padding:2px 6px;border:1px solid ${selected ? ACCENT : "#d6d1c4"};white-space:nowrap;letter-spacing:.03em;box-shadow:0 1px 3px rgba(20,23,26,.08);">${label}</div>`;
+      const bg = retro ? "#081311" : "#fbf6e9";
+      const fg = retro
+        ? selected
+          ? "#ffc857"
+          : "#7dfcbf"
+        : selected
+          ? "#074a40"
+          : "#17201d";
+      const border = retro ? "#2b4a45" : "#17201d";
+      const shadow = retro ? "0 0 0 1px #2b4a45" : "2px 2px 0 #17201d";
+      const html = `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;background:${bg};color:${fg};padding:2px 6px;border:1px solid ${border};white-space:nowrap;letter-spacing:.03em;box-shadow:${shadow};">${label}</div>`;
       circle.setTooltipContent(html);
     });
   }, []);
@@ -113,9 +134,9 @@ export default function MapPanel({
       ZONES.forEach((zone) => {
         const circle = leaflet.circle(zone.coords, {
           radius: zone.radius,
-          color: "#7d7565",
+          color: "#6b6152",
           weight: 1,
-          fillColor: "#ddd8cb",
+          fillColor: "#d8cbb2",
           fillOpacity: 0.4,
         });
         circle.bindTooltip("", {
@@ -145,9 +166,9 @@ export default function MapPanel({
 
   /* ---- restyle when controls change ---------------------------------- */
   useEffect(() => {
-    paintState.current = { metric, day, selectedId };
+    paintState.current = { metric, day, selectedId, variant };
     paint();
-  }, [metric, day, selectedId, paint]);
+  }, [metric, day, selectedId, variant, paint]);
 
   /* ---- centre on the selected region (skipping the first render) ------ */
   const firstFly = useRef(true);
@@ -169,7 +190,7 @@ export default function MapPanel({
     <div className="relative w-full h-full">
       <div
         ref={nodeRef}
-        className="w-full h-full"
+        className={`w-full h-full ${retro ? "map-retro" : ""}`}
         style={{ minHeight: retro ? 280 : 400 }}
         role="application"
         aria-label={`Interactive map of monitored meteorological subdivisions showing ${
@@ -179,15 +200,15 @@ export default function MapPanel({
 
       {/* Legend — always names the metric the colour encodes */}
       <div
-        className={`absolute bottom-2 left-2 z-[500] font-mono-code text-[9px] leading-tight pointer-events-none ${
+        className={`absolute bottom-2 left-2 z-[500] text-[9px] leading-tight pointer-events-none border-2 ${
           retro
-            ? "bg-[#c3c3c3] text-black border border-[#7a7a7a] px-2 py-1.5"
-            : "bg-white/95 text-[var(--muted)] border border-[var(--rule)] px-2.5 py-2"
+            ? "bg-[#081311]/95 text-[var(--mint-dim)] border-[#2b4a45] px-2 py-1.5 font-mono-code"
+            : "bg-[var(--surface)]/95 text-[var(--muted)] border-[var(--ink)] px-2.5 py-2 font-mono-code shadow-[2px_2px_0_rgba(23,32,29,.2)]"
         }`}
       >
         <div
-          className={`uppercase tracking-[0.08em] mb-1.5 ${
-            retro ? "font-bold" : "text-[var(--ink)]"
+          className={`uppercase tracking-[0.06em] mb-1.5 font-pixel text-[8px] ${
+            retro ? "text-[var(--mint)]" : "text-[var(--ink)]"
           }`}
         >
           {metric === "BUST"
@@ -200,10 +221,10 @@ export default function MapPanel({
         {metric === "BUST" ? (
           <div className="flex flex-col gap-1">
             {[
-              ["#2c7150", "0–20%"],
-              ["#2f6d8c", "20–40%"],
-              ["#856a1c", "40–60%"],
-              ["#962a26", "60–100%"],
+              ["#1d6f47", "0–20%"],
+              ["#236d7b", "20–40%"],
+              ["#8a5a09", "40–60%"],
+              ["#a9221d", "60–100%"],
             ].map(([c, l]) => (
               <div key={l} className="flex items-center gap-2">
                 <span className="inline-block h-2.5 w-3.5" style={{ background: c }} />
@@ -215,7 +236,7 @@ export default function MapPanel({
           <div className="w-[104px]">
             <div
               className="h-2 w-full"
-              style={{ background: "linear-gradient(to right, #e3ebf0, #1b4f72)" }}
+              style={{ background: "linear-gradient(to right, #e4dbc6, #1f7a86)" }}
             />
             <div className="flex justify-between mt-1 text-[8px]">
               <span>0</span>
@@ -226,16 +247,26 @@ export default function MapPanel({
         )}
 
         <div className="mt-1.5 flex items-center gap-2">
-          <span className="inline-block h-2.5 w-3.5 bg-[#d9d4c5] border border-dashed border-[#8a929a]" />
+          <span
+            className={`inline-block h-2.5 w-3.5 border border-dashed ${
+              retro
+                ? "bg-[#233b36] border-[var(--mint-dim)]"
+                : "bg-[#d8cbb2] border-[#9a8f78]"
+            }`}
+          />
           <span>no data</span>
         </div>
       </div>
 
-      {!retro ? (
-        <div className="pointer-events-none absolute top-2 right-2 z-[500] border border-[var(--rule)] bg-white/90 px-2 py-1 font-mono-code text-[9px] text-[var(--muted-dim)]">
-          Basemap OSM · Overlay simulated
-        </div>
-      ) : null}
+      <div
+        className={`pointer-events-none absolute top-2 right-2 z-[500] border px-2 py-1 font-mono-code text-[9px] ${
+          retro
+            ? "border-[#2b4a45] bg-[#081311]/90 text-[var(--mint-dim)]"
+            : "border-[var(--ink)] bg-[var(--surface)]/90 text-[var(--muted-dim)]"
+        }`}
+      >
+        Basemap © OpenStreetMap · overlay simulated
+      </div>
     </div>
   );
 }

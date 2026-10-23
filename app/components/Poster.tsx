@@ -4,9 +4,19 @@ import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { REGIMES, RUN_META, TEAM, ZONES } from "@/app/data/zones";
 import { confidenceLabel, confidenceTone, getZoneTimeline, TONE_COLOR } from "@/app/lib/timeline";
-import { CloudField, CountUp, ScrubRule } from "./Atmosphere";
+import { CountUp, ScrubRule } from "./Atmosphere";
 import { EASE, fadeItem, ParallaxBox, Reveal, rowItem, SplitWords, Stagger, staggerParent, AnimatedNumber } from "./motion";
-import { Backdrop, Caveat, Chip, DaySelector, Eyebrow, Panel, ProgressBar, SectionHeader } from "./ui";
+import {
+  Backdrop,
+  Caveat,
+  Chip,
+  DaySelector,
+  Eyebrow,
+  Panel,
+  ProgressBar,
+  SectionHeader,
+  WindowFrame,
+} from "./ui";
 
 type Props = {
   day: number;
@@ -32,6 +42,59 @@ const KEY_FIGURES: { count?: number; text?: string; label: string; hint: string 
 ];
 
 /* ------------------------------------------------------------------ *
+ * Pixel glyphs — 24px weather icons, drawn with hard rectangles.
+ * ------------------------------------------------------------------ */
+function PixelIcon({ kind }: { kind: "radar" | "cloud" | "rain" | "alert" }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true" fill="currentColor">
+      {kind === "radar" ? (
+        <>
+          <rect x="2" y="19" width="20" height="2" />
+          <rect x="5" y="15" width="14" height="2" />
+          <rect x="8" y="11" width="8" height="2" />
+          <rect x="11" y="6" width="2" height="5" />
+          <rect x="15" y="7" width="2" height="2" />
+          <rect x="17" y="9" width="2" height="2" />
+        </>
+      ) : null}
+      {kind === "cloud" ? (
+        <>
+          <rect x="4" y="12" width="16" height="6" />
+          <rect x="7" y="9" width="9" height="3" />
+          <rect x="10" y="6" width="4" height="3" />
+        </>
+      ) : null}
+      {kind === "rain" ? (
+        <>
+          <rect x="4" y="8" width="14" height="5" />
+          <rect x="7" y="5" width="7" height="3" />
+          <rect x="6" y="16" width="2" height="5" />
+          <rect x="11" y="16" width="2" height="5" />
+          <rect x="16" y="16" width="2" height="5" />
+        </>
+      ) : null}
+      {kind === "alert" ? (
+        <>
+          <rect x="10" y="4" width="4" height="10" />
+          <rect x="10" y="17" width="4" height="4" />
+          <rect x="4" y="2" width="2" height="2" />
+          <rect x="18" y="2" width="2" height="2" />
+          <rect x="4" y="21" width="2" height="1" />
+          <rect x="18" y="21" width="2" height="1" />
+        </>
+      ) : null}
+    </svg>
+  );
+}
+
+const SIGNALS: { kind: "radar" | "cloud" | "rain" | "alert"; label: string; value: string }[] = [
+  { kind: "radar", label: "Scan", value: "09s" },
+  { kind: "cloud", label: "Regime", value: "10" },
+  { kind: "rain", label: "Bands", value: "03" },
+  { kind: "alert", label: "Bust", value: "15" },
+];
+
+/* ------------------------------------------------------------------ *
  * Hero
  * ------------------------------------------------------------------ */
 function Hero({
@@ -50,41 +113,56 @@ function Hero({
         };
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--rule)]">
-      <Backdrop src="/img/bg-hero.jpg" opacity={1} position="50% 55%" wash="none" priority drift />
+    <section className="relative overflow-hidden border-b-2 border-[var(--ink)] bg-[var(--paper)]">
+      {/* Same monsoon photograph as the original build, re-rendered as a
+          coarse pixel plate and slow-stepped across the hero. */}
+      <Backdrop
+        src="/img/bg-hero-pix.jpg"
+        opacity={1}
+        position="50% 55%"
+        wash="none"
+        priority
+        pixelated
+        pixelAnim
+      />
+      <div
+        className="absolute inset-0 z-[1] bg-[linear-gradient(96deg,rgba(243,234,215,.97)_0%,rgba(243,234,215,.92)_38%,rgba(243,234,215,.6)_70%,rgba(243,234,215,.34)_100%)]"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-x-0 bottom-0 z-[1] h-32 bg-[linear-gradient(to_top,rgba(243,234,215,.92),rgba(243,234,215,0))]"
+        aria-hidden="true"
+      />
+      {/* Graph paper, a hard accent bar and a slow radar target in the corner. */}
+      <div className="absolute inset-0 pixel-grid-bg opacity-70" aria-hidden="true" />
+      <div
+        className="absolute -right-32 -top-40 h-[460px] w-[460px] radar-rings opacity-70"
+        aria-hidden="true"
+      />
+      <div className="absolute left-0 top-0 h-2 w-44 bg-[var(--accent)]" aria-hidden="true" />
+      <div className="absolute bottom-0 right-0 h-2 w-28 bg-[var(--accent-2)]" aria-hidden="true" />
 
-      {/* Drifting cloud banks sit over the photograph and under the reading scrim. */}
-      <CloudField opacity={1} />
-
-      {/* Reading scrim: opaque over the copy column, open to the photograph on the right. */}
-      <div className="absolute inset-0 z-[2] bg-[linear-gradient(96deg,rgba(247,246,242,.95)_0%,rgba(247,246,242,.9)_30%,rgba(247,246,242,.7)_48%,rgba(247,246,242,.14)_68%,rgba(247,246,242,.28)_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 z-[2] h-28 bg-[linear-gradient(to_top,rgba(247,246,242,.95),rgba(247,246,242,0))]" />
-
-      <div className="relative z-10 mx-auto max-w-[1240px] px-5 sm:px-8 pt-14 pb-14 md:pt-20 md:pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+      <div className="relative z-10 mx-auto max-w-[1240px] px-5 sm:px-8 pt-12 pb-12 md:pt-16 md:pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
           {/* Copy */}
           <div className="lg:col-span-6">
             <motion.div {...enter(0)}>
-              <Eyebrow>SIH26079 · Decision-support prototype</Eyebrow>
+              <Eyebrow>SIH26079 // Decision-support prototype</Eyebrow>
             </motion.div>
 
-            <h1 className="font-display mt-6 text-[2.8rem] sm:text-[3.5rem] lg:text-[3.9rem] leading-[1.02] tracking-[-0.015em] text-[var(--ink)]">
-              <SplitWords text="Know where the forecast is" delay={0.1} />
-              {" "}
-              <motion.em
-                className="italic text-[var(--accent)] pb-[0.08em] [background-image:linear-gradient(currentColor,currentColor)] [background-repeat:no-repeat] [background-position:0_100%] [box-decoration-break:clone]"
-                initial={reduce ? false : { backgroundSize: "0% 2px" }}
-                animate={{ backgroundSize: "100% 2px" }}
-                transition={{ duration: 0.9, delay: 0.95, ease: EASE }}
-              >
-                <SplitWords text="likely to fail" delay={0.32} />
-              </motion.em>
-              .
+            <h1 className="font-display mt-5 text-[2.35rem] sm:text-[3rem] lg:text-[3.35rem] uppercase leading-[0.96] tracking-[-0.01em] text-[var(--ink)]">
+              <SplitWords text="Know where the" delay={0.1} />
+              <br />
+              <SplitWords text="forecast is" delay={0.22} />
+              <br />
+              <span className="pixel-highlight mt-1 inline-block">
+                <SplitWords text="likely to fail" delay={0.34} />
+              </span>
             </h1>
 
             <motion.p
-              {...enter(0.42)}
-              className="mt-6 max-w-[33rem] text-[16px] leading-[1.7] text-[var(--ink-2)]"
+              {...enter(0.46)}
+              className="mt-6 max-w-[33rem] text-[13px] leading-[1.8] text-[var(--ink-2)]"
             >
               ForecastGuard estimates the probability that a medium-range rainfall forecast
               will be substantially wrong — by subdivision, by lead day, and by synoptic
@@ -92,71 +170,90 @@ function Hero({
             </motion.p>
 
             <motion.div
-              {...enter(0.52)}
-              className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3"
+              {...enter(0.55)}
+              className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <motion.button
-                type="button"
-                onClick={onOpenDashboard}
-                whileHover={reduce ? undefined : { y: -1 }}
-                whileTap={reduce ? undefined : { y: 0 }}
-                className="accent-bg px-6 py-3 text-[14px] font-medium transition-opacity hover:opacity-90 cursor-pointer"
-              >
-                Open the dashboard
-              </motion.button>
               <button
                 type="button"
-                onClick={onOpenWin32}
-                className="group text-[13px] text-[var(--ink-2)] underline decoration-[var(--rule)] underline-offset-4 hover:text-[var(--accent)] hover:decoration-[var(--accent)] transition-colors cursor-pointer"
+                onClick={onOpenDashboard}
+                className="pixel-btn pixel-btn--primary"
               >
-                View the Win32 console
-                <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">
-                  {" "}
-                  →
-                </span>
+                Open dashboard
+                <span aria-hidden="true">→</span>
+              </button>
+              <button type="button" onClick={onOpenWin32} className="pixel-btn">
+                Ops console
+                <span aria-hidden="true">▚</span>
               </button>
             </motion.div>
 
-            <motion.p
-              {...enter(0.6)}
-              className="mt-8 font-mono-code text-[10px] leading-relaxed tracking-[0.04em] text-[var(--muted-dim)]"
-            >
-              Prototype build · all values synthetic · run {RUN_META.runId}
-            </motion.p>
+            <motion.div {...enter(0.63)} className="mt-7 flex flex-wrap items-center gap-2">
+              <div className="inline-flex flex-wrap items-center gap-x-2.5 border border-[var(--ink)] bg-[var(--surface)] px-2.5 py-1.5 shadow-[2px_2px_0_var(--ink)]">
+                <span className="h-2 w-2 bg-[var(--accent)] blink" aria-hidden="true" />
+                <span className="font-pixel text-[8px] uppercase text-[var(--ink)]">
+                  Simulated run
+                </span>
+                <span className="font-mono-code text-[9px] text-[var(--muted)]">
+                  {RUN_META.runId}
+                </span>
+              </div>
+            </motion.div>
+
+            <motion.div {...enter(0.7)} className="mt-7 grid grid-cols-4 gap-2 max-w-[360px]">
+              {SIGNALS.map((s) => (
+                <div
+                  key={s.label}
+                  className="border border-[var(--ink)] bg-[var(--surface)] px-2 py-2"
+                >
+                  <PixelIcon kind={s.kind} />
+                  <div className="mt-1 font-pixel text-[7px] uppercase text-[var(--muted)]">
+                    {s.label}
+                  </div>
+                  <div className="font-mono-code text-[10px] text-[var(--ink)] tnum">
+                    {s.value}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
           </div>
 
-          {/* Atlas figure */}
+          {/* Radar plate */}
           <div className="lg:col-span-6">
             <motion.figure
-              initial={reduce ? false : { opacity: 0, y: 28, scale: 0.985 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.85, delay: 0.15, ease: EASE }}
-              className="border border-[var(--rule)] bg-[var(--surface)] shadow-[0_24px_60px_-32px_rgba(20,23,26,.45)]"
+              initial={reduce ? false : { opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.15, ease: EASE }}
             >
-              <span className="block h-[3px] bg-[var(--accent)]" aria-hidden="true" />
-              <div className="relative overflow-hidden">
+              <WindowFrame
+                title="RADAR-9 // Watch areas"
+                meta="D1–D10"
+                bodyClassName="screen-dark relative overflow-hidden"
+              >
                 <Image
-                  src="/img/hero-atlas.svg"
-                  alt="Atlas-style map of India showing the fifteen monitored meteorological subdivisions, with shaded rainfall cells over the Konkan coast, Odisha, Assam and Kerala."
-                  width={1200}
-                  height={900}
+                  src="/img/hero-pixel.svg"
+                  alt="Pixel-art radar map of India showing the fifteen monitored meteorological subdivisions as bright blocks over a dark grid."
+                  width={1000}
+                  height={760}
                   priority
                   className="block h-auto w-full"
                 />
-                {/* The plate prints in from the left. */}
+                <span
+                  className="pointer-events-none absolute inset-0 scanlines"
+                  aria-hidden="true"
+                />
                 {reduce ? null : (
                   <motion.span
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-[var(--surface)]"
+                    className="pointer-events-none absolute inset-0 bg-[var(--paper)]"
                     initial={{ x: "0%" }}
                     animate={{ x: "101%" }}
-                    transition={{ duration: 1, delay: 0.4, ease: EASE }}
+                    transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
                   />
                 )}
-              </div>
-              <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--rule)] px-4 py-2.5">
-                <span className="font-mono-code text-[10px] tracking-[0.06em] text-[var(--muted)]">
-                  Fig. 1 — Watch areas and active rainfall cells
+              </WindowFrame>
+              <figcaption className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono-code text-[9px] tracking-[0.04em] text-[var(--muted)]">
+                  FIG. 1 — 15 SUBDIVISIONS / 4 ACTIVE CELLS
                 </span>
                 <Chip tone="warn">Simulated</Chip>
               </figcaption>
@@ -166,7 +263,7 @@ function Hero({
       </div>
 
       {/* Key figures */}
-      <div className="relative z-10 border-t border-[var(--rule)] bg-[rgba(247,246,242,.86)] backdrop-blur-[2px]">
+      <div className="relative z-10 border-t-2 border-[var(--ink)] bg-[var(--surface-2)]">
         <div className="mx-auto max-w-[1240px] px-5 sm:px-8">
           <motion.dl
             className="grid grid-cols-2 md:grid-cols-4"
@@ -187,13 +284,13 @@ function Hero({
                   i >= 2 ? "border-t md:border-t-0" : ""
                 }`}
               >
-                <dt className="font-mono-code text-[10px] uppercase tracking-[0.1em] text-[var(--muted-dim)]">
+                <dt className="font-pixel text-[9px] uppercase tracking-[0.03em] text-[var(--muted)]">
                   {f.label}
                 </dt>
-                <dd className="mt-2 font-display text-[1.7rem] leading-none text-[var(--ink)] tnum">
+                <dd className="mt-2 font-display text-[2rem] leading-none text-[var(--ink)] tnum">
                   {f.count === undefined ? f.text : <CountUp value={f.count} />}
                 </dd>
-                <dd className="mt-1.5 text-[12px] text-[var(--muted)]">{f.hint}</dd>
+                <dd className="mt-1.5 text-[11px] text-[var(--muted)]">{f.hint}</dd>
               </motion.div>
             ))}
           </motion.dl>
@@ -228,19 +325,19 @@ function Method() {
   const reduce = useReducedMotion();
 
   return (
-    <section id="method" className="relative overflow-hidden border-b border-[var(--rule)]">
+    <section id="method" className="relative overflow-hidden border-b-2 border-[var(--ink)]">
       <Backdrop src="/img/bg-topo.svg" opacity={1} position="50% 50%" wash="none" drift />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(247,246,242,.9)_0%,rgba(247,246,242,.45)_22%,rgba(247,246,242,.28)_58%,rgba(247,246,242,.85)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(243,234,215,.92)_0%,rgba(243,234,215,.55)_22%,rgba(243,234,215,.4)_58%,rgba(243,234,215,.9)_100%)]" />
 
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           <Reveal className="lg:col-span-5">
             <Eyebrow>Why this exists</Eyebrow>
             <ScrubRule className="mt-5 w-24" tone="accent" />
-            <h2 className="font-display mt-5 text-[1.9rem] sm:text-[2.25rem] leading-[1.12] text-[var(--ink)]">
+            <h2 className="font-display mt-5 text-[1.8rem] sm:text-[2.15rem] leading-[1.02] text-[var(--ink)]">
               Forecast skill is not uniform. Neither should confidence be.
             </h2>
-            <div className="mt-5 space-y-4 text-[15px] leading-[1.72] text-[var(--ink-2)]">
+            <div className="mt-5 space-y-4 text-[13px] leading-[1.8] text-[var(--ink-2)]">
               <p>
                 Medium-range rainfall forecasts degrade unevenly. A model that performs well
                 over the Deccan interior can be badly wrong along the Western Ghats, in the
@@ -257,13 +354,13 @@ function Method() {
               {/* The rule draws down as the pull quote is read. */}
               <motion.span
                 aria-hidden="true"
-                className="absolute left-0 top-0 h-full w-[2px] origin-top bg-[var(--accent)]"
+                className="absolute left-0 top-0 h-full w-[3px] origin-top bg-[var(--accent)]"
                 initial={reduce ? false : { scaleY: 0 }}
                 whileInView={{ scaleY: 1 }}
                 viewport={{ once: true, amount: 0.6 }}
                 transition={{ duration: 0.8, ease: EASE }}
               />
-              <p className="font-display text-[17px] leading-snug text-[var(--ink)]">
+              <p className="font-display text-[18px] leading-snug text-[var(--ink)]">
                 “Treat a high bust probability as a prompt to look closer — not as a
                 prediction of impact.”
               </p>
@@ -272,17 +369,16 @@ function Method() {
 
           <div className="lg:col-span-7">
             <Reveal delay={0.08}>
-              <figure className="border border-[var(--rule)] bg-[var(--surface)]">
+              <figure className="pixel-window">
                 <Image
                   src="/img/feature-horizon.svg"
-                  alt="Bar chart showing bust probability rising through the ten-day horizon, peaking around day four above the review threshold."
+                  alt="Pixel bar chart showing bust probability rising through the ten-day horizon, peaking around day four above the review threshold."
                   width={720}
                   height={460}
                   className="block h-auto w-full"
                 />
-                <figcaption className="border-t border-[var(--rule)] px-4 py-2.5 text-[11px] text-[var(--muted)]">
-                  Illustrative bust probability by lead day for a single subdivision. Values are
-                  synthetic.
+                <figcaption className="border-t-2 border-[var(--ink)] bg-[var(--surface-2)] px-4 py-2.5 font-mono-code text-[10px] text-[var(--muted)]">
+                  FIG. 2 — Illustrative bust probability by lead day. Values synthetic.
                 </figcaption>
               </figure>
             </Reveal>
@@ -296,12 +392,14 @@ function Method() {
                   whileHover={reduce ? undefined : { y: -2 }}
                 >
                   <div className="flex items-baseline gap-2">
-                    <span className="font-mono-code text-[10px] text-[var(--accent)]">
+                    <span className="font-pixel text-[10px] text-[var(--accent)]">
                       {s.n.padStart(2, "0")}
                     </span>
-                    <h3 className="text-[14px] font-semibold text-[var(--ink)]">{s.title}</h3>
+                    <h3 className="font-display text-[17px] leading-tight text-[var(--ink)]">
+                      {s.title}
+                    </h3>
                   </div>
-                  <p className="mt-2 text-[13px] leading-relaxed text-[var(--muted)]">{s.body}</p>
+                  <p className="mt-2 text-[12px] leading-[1.75] text-[var(--muted)]">{s.body}</p>
                 </motion.div>
               ))}
             </Stagger>
@@ -326,18 +424,18 @@ function ReadingKey() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--rule)]">
-      <Backdrop src="/img/bg-band.jpg" opacity={1} position="50% 60%" wash="none" priority drift />
-      <div className="absolute inset-0 bg-[linear-gradient(94deg,rgba(247,246,242,.97)_0%,rgba(247,246,242,.92)_38%,rgba(247,246,242,.66)_64%,rgba(247,246,242,.42)_100%)]" />
+    <section className="relative overflow-hidden border-b-2 border-[var(--ink)]">
+      <Backdrop src="/img/bg-band-pix.jpg" opacity={1} position="50% 60%" wash="none" priority pixelated pixelAnim />
+      <div className="absolute inset-0 bg-[linear-gradient(94deg,rgba(243,234,215,.98)_0%,rgba(243,234,215,.94)_38%,rgba(243,234,215,.72)_64%,rgba(243,234,215,.5)_100%)]" />
 
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
           <Reveal className="lg:col-span-4">
             <Eyebrow>Reading key</Eyebrow>
-            <h2 className="font-display mt-5 text-[1.9rem] leading-[1.12] text-[var(--ink)]">
+            <h2 className="font-display mt-5 text-[1.8rem] leading-[1.02] text-[var(--ink)]">
               Four bands, one review decision behind each.
             </h2>
-            <p className="mt-4 text-[14px] leading-[1.7] text-[var(--ink-2)]">
+            <p className="mt-4 text-[13px] leading-[1.8] text-[var(--ink-2)]">
               Bust probability is shown as a band rather than a decimal because the
               underlying calibration does not support finer resolution.
             </p>
@@ -356,11 +454,11 @@ function ReadingKey() {
                   key={band.tone}
                   variants={fadeItem}
                   whileHover={reduce ? undefined : { y: -2 }}
-                  className="border-t border-[var(--rule)] py-4"
+                  className="border-t-2 border-[var(--ink)] py-4"
                 >
                   <dt>
                     <motion.span
-                      className="block h-[6px] w-full origin-left"
+                      className="block h-[10px] w-full origin-left border border-[var(--ink)]"
                       style={{ background: TONE_COLOR[band.tone] }}
                       initial={{ scaleX: 0 }}
                       whileInView={{ scaleX: 1 }}
@@ -369,13 +467,15 @@ function ReadingKey() {
                       aria-hidden="true"
                     />
                     <span className="mt-3 flex items-baseline justify-between gap-3">
-                      <span className="text-[14px] text-[var(--ink)]">{band.label}</span>
+                      <span className="font-display text-[17px] leading-tight text-[var(--ink)]">
+                        {band.label}
+                      </span>
                       <span className="font-mono-code text-[11px] tnum text-[var(--muted)]">
                         {band.range}
                       </span>
                     </span>
                   </dt>
-                  <dd className="mt-1 font-mono-code text-[10px] uppercase tracking-[0.08em] text-[var(--muted-dim)]">
+                  <dd className="mt-1 font-pixel text-[9px] uppercase tracking-[0.02em] text-[var(--muted-dim)]">
                     {band.action}
                   </dd>
                 </motion.div>
@@ -410,7 +510,7 @@ function SubdivisionSection({
   const hidden = all.length - rows.length;
 
   return (
-    <section className="border-b border-[var(--rule)] bg-[var(--surface)]">
+    <section className="border-b-2 border-[var(--ink)] bg-[var(--surface)]">
       <div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <Reveal>
           <SectionHeader
@@ -428,7 +528,7 @@ function SubdivisionSection({
           whileInView="show"
           viewport={{ once: true, amount: 0.05 }}
         >
-          <div className="hidden md:grid grid-cols-[2.5rem_7rem_1fr_7rem_4.5rem_9rem] items-center gap-4 py-2.5 border-b border-[var(--rule)]">
+          <div className="hidden md:grid grid-cols-[2.5rem_7rem_1fr_7rem_4.5rem_9rem] items-center gap-4 py-2.5 border-b-2 border-[var(--ink)]">
             <span className="label text-[var(--muted-dim)]">No.</span>
             <span className="label text-[var(--muted-dim)]">Zone</span>
             <span className="label text-[var(--muted-dim)]">Subdivision</span>
@@ -459,17 +559,17 @@ function SubdivisionSection({
                   {/* Selection edge, drawn on hover or when the row is the active zone. */}
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none absolute left-0 top-0 h-full w-[2px] origin-top bg-[var(--accent)] transition-transform duration-300 ${
+                    className={`pointer-events-none absolute left-0 top-0 h-full w-[3px] origin-top bg-[var(--accent-2)] transition-transform duration-300 ${
                       active ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"
                     }`}
                   />
-                  <span className="font-mono-code text-[11px] text-[var(--muted-dim)] tnum">
+                  <span className="font-pixel text-[10px] text-[var(--muted-dim)] tnum">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="font-mono-code text-[11px] font-medium text-[var(--accent)]">
                     {zone.id}
                   </span>
-                  <span className="col-span-2 md:col-span-1 text-[14px] text-[var(--ink)] group-hover:text-[var(--accent-ink)] transition-colors">
+                  <span className="col-span-2 md:col-span-1 text-[13px] text-[var(--ink)] group-hover:text-[var(--accent-ink)] transition-colors">
                     {zone.name}
                   </span>
                   <span className="col-span-2 md:col-span-1 mt-1 md:mt-0">
@@ -512,9 +612,9 @@ function SubdivisionSection({
  * ------------------------------------------------------------------ */
 function Capabilities() {
   return (
-    <section className="relative overflow-hidden border-b border-[var(--rule)]">
-      <Backdrop src="/img/bg-satellite.jpg" opacity={1} position="50% 40%" wash="none" drift />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(247,246,242,.93)_0%,rgba(247,246,242,.72)_26%,rgba(247,246,242,.72)_74%,rgba(247,246,242,.95)_100%)]" />
+    <section className="relative overflow-hidden border-b-2 border-[var(--ink)]">
+      <Backdrop src="/img/bg-satellite-pix.jpg" opacity={1} position="50% 40%" wash="none" pixelated pixelAnim />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(243,234,215,.94)_0%,rgba(243,234,215,.78)_26%,rgba(243,234,215,.78)_74%,rgba(243,234,215,.96)_100%)]" />
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <Reveal>
           <SectionHeader
@@ -527,10 +627,10 @@ function Capabilities() {
         <div className="space-y-12">
           <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <ParallaxBox className="lg:col-span-6" distance={16}>
-              <figure className="border border-[var(--rule)] bg-[var(--surface)]">
+              <figure className="pixel-window">
                 <Image
                   src="/img/feature-subdivisions.svg"
-                  alt="Map of India with the fifteen monitored subdivisions marked and sized by watch area."
+                  alt="Pixel map of India with the fifteen monitored subdivisions marked as colour blocks."
                   width={720}
                   height={460}
                   className="block h-auto w-full"
@@ -540,10 +640,10 @@ function Capabilities() {
             <div className="lg:col-span-6">
               <Reveal delay={0.1}>
                 <Eyebrow>Spatial view</Eyebrow>
-                <h3 className="font-display mt-4 text-[1.6rem] leading-tight text-[var(--ink)]">
+                <h3 className="font-display mt-4 text-[1.6rem] leading-[1.05] text-[var(--ink)]">
                   See the watch areas, then the ranking
                 </h3>
-                <p className="mt-3 text-[15px] leading-[1.72] text-[var(--ink-2)]">
+                <p className="mt-3 text-[13px] leading-[1.8] text-[var(--ink-2)]">
                   Switch the map between raw rainfall, bias-corrected values and bust
                   probability. A sortable table gives the same information without relying on
                   colour or pointer input.
@@ -564,10 +664,10 @@ function Capabilities() {
                   <motion.li
                     key={item}
                     variants={fadeItem}
-                    className="flex gap-3 text-[13px] text-[var(--muted)]"
+                    className="flex gap-3 text-[12px] text-[var(--muted)]"
                   >
                     <span
-                      className="mt-[7px] h-1 w-1 shrink-0 bg-[var(--accent)]"
+                      className="mt-[6px] h-2 w-2 shrink-0 bg-[var(--accent)]"
                       aria-hidden="true"
                     />
                     {item}
@@ -579,10 +679,10 @@ function Capabilities() {
 
           <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <ParallaxBox className="lg:col-span-6 lg:order-2" distance={16}>
-              <figure className="border border-[var(--rule)] bg-[var(--surface)]">
+              <figure className="pixel-window">
                 <Image
                   src="/img/feature-dualmode.svg"
-                  alt="The modern web console beside a retro Windows-style telemetry console, both showing the same forecast series."
+                  alt="The light pixel field terminal beside a dark CRT ops console, both showing the same forecast series."
                   width={720}
                   height={460}
                   className="block h-auto w-full"
@@ -592,11 +692,11 @@ function Capabilities() {
             <div className="lg:col-span-6 lg:order-1">
               <Reveal delay={0.1}>
                 <Eyebrow>Dual interface</Eyebrow>
-                <h3 className="font-display mt-4 text-[1.6rem] leading-tight text-[var(--ink)]">
-                  A web dashboard, and a console for the ops room
+                <h3 className="font-display mt-4 text-[1.6rem] leading-[1.05] text-[var(--ink)]">
+                  A field terminal, and a console for the ops room
                 </h3>
-                <p className="mt-3 text-[15px] leading-[1.72] text-[var(--ink-2)]">
-                  The Win32 mode is a deliberately dense, high-contrast skin over the same
+                <p className="mt-3 text-[13px] leading-[1.8] text-[var(--ink-2)]">
+                  The ops console is a deliberately dense, phosphor-on-black skin over the same
                   dataset — built for a wall display or a low-spec machine, and readable at a
                   distance.
                 </p>
@@ -609,10 +709,10 @@ function Capabilities() {
                   { count: 1, label: "shared dataset" },
                 ].map((s) => (
                   <motion.div key={s.label} variants={fadeItem}>
-                    <div className="font-display text-[1.35rem] leading-none text-[var(--ink)] tnum">
+                    <div className="font-display text-[1.45rem] leading-none text-[var(--ink)] tnum">
                       {s.count === undefined ? s.text : <CountUp value={s.count} />}
                     </div>
-                    <div className="mt-1 font-mono-code text-[10px] uppercase tracking-[0.08em] text-[var(--muted-dim)]">
+                    <div className="mt-1 font-pixel text-[8px] uppercase tracking-[0.02em] text-[var(--muted-dim)]">
                       {s.label}
                     </div>
                   </motion.div>
@@ -641,12 +741,11 @@ function RegionDetail({
   const zone = ZONES.find((z) => z.id === selectedId) ?? ZONES[0];
   const info = getZoneTimeline(zone, REGIMES)[day - 1];
   const tone = confidenceTone(info.bust);
-  const reduce = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--rule)] bg-[var(--paper-2)]">
+    <section className="relative overflow-hidden border-b-2 border-[var(--ink)] bg-[var(--paper-2)]">
       <Backdrop src="/img/bg-isobars.svg" opacity={0.6} position="50% 40%" wash="none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(239,236,228,.92)_0%,rgba(239,236,228,.6)_35%,rgba(239,236,228,.75)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(233,223,201,.94)_0%,rgba(233,223,201,.66)_35%,rgba(233,223,201,.82)_100%)]" />
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <Reveal className="lg:col-span-7">
@@ -660,8 +759,10 @@ function RegionDetail({
               >
                 <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <div className="font-mono-code text-[11px] text-[var(--accent)]">{zone.id}</div>
-                    <h3 className="font-display mt-1 text-[1.6rem] sm:text-[1.8rem] leading-tight text-[var(--ink)]">
+                    <div className="font-pixel text-[9px] uppercase text-[var(--accent)]">
+                      {zone.id}
+                    </div>
+                    <h3 className="font-display mt-1 text-[1.55rem] sm:text-[1.75rem] leading-[1.05] text-[var(--ink)]">
                       {zone.name}
                     </h3>
                   </div>
@@ -683,7 +784,7 @@ function RegionDetail({
                     <div key={label as string}>
                       <dt className="label text-[var(--muted-dim)]">{label as string}</dt>
                       <dd
-                        className="mt-1 font-display text-[1.25rem] leading-none tnum"
+                        className="mt-1 font-display text-[1.35rem] leading-none tnum"
                         style={{ color: color as string }}
                       >
                         <AnimatedNumber
@@ -697,31 +798,30 @@ function RegionDetail({
                 </dl>
               </motion.div>
 
-              <div className="mt-7 pt-5 border-t border-[var(--rule-soft)]">
+              <div className="mt-7 pt-5 border-t-2 border-[var(--ink)]">
                 <div className="label text-[var(--muted-dim)]">Diagnostic note</div>
-                <p className="mt-2 text-[14px] leading-[1.7] text-[var(--ink-2)]">{zone.reason}</p>
+                <p className="mt-2 text-[13px] leading-[1.8] text-[var(--ink-2)]">{zone.reason}</p>
                 <Caveat className="mt-3">
                   Authored copy for the prototype. Not a computed attribution — no feature
                   pipeline or attribution model is connected in this build.
                 </Caveat>
               </div>
 
-              <motion.button
+              <button
                 type="button"
                 onClick={onOpenDashboard}
-                whileHover={{ y: -1 }}
-                whileTap={{ y: 0 }}
-                className="mt-7 accent-bg px-5 py-2.5 text-[13px] font-medium transition-opacity hover:opacity-90 cursor-pointer"
+                className="pixel-btn pixel-btn--primary mt-7"
               >
                 Open full diagnostics
-              </motion.button>
+                <span aria-hidden="true">→</span>
+              </button>
             </Panel>
           </Reveal>
 
           <Reveal className="lg:col-span-5 flex" delay={0.08}>
             <Panel className="flex flex-col w-full">
-              <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-[var(--rule-soft)]">
-                <span className="font-mono-code text-[10px] uppercase tracking-[0.11em] text-[var(--ink)]">
+              <div className="flex items-center justify-between gap-3 px-5 py-3 border-b-2 border-[var(--ink)] bg-[var(--surface-2)]">
+                <span className="font-pixel text-[10px] uppercase tracking-[0.02em] text-[var(--ink)]">
                   Heavy-rain exceedance
                 </span>
                 <span className="font-mono-code text-[10px] text-[var(--muted-dim)]">
@@ -738,30 +838,23 @@ function RegionDetail({
                   ].map(([label, value, caption]) => (
                     <div
                       key={label as string}
-                      className="border border-[var(--rule-soft)] bg-[var(--surface-2)] p-3 text-center"
+                      className="border border-[var(--ink)] bg-[var(--surface-2)] p-3 text-center shadow-[2px_2px_0_rgba(23,32,29,.12)]"
                     >
                       <div className="font-mono-code text-[10px] text-[var(--muted)]">
                         {label as string}
                       </div>
-                      <div className="mt-1 font-display text-[1.35rem] leading-none text-[var(--ink)] tnum">
+                      <div className="mt-1 font-display text-[1.45rem] leading-none text-[var(--ink)] tnum">
                         <AnimatedNumber value={value as number} suffix="%" />
                       </div>
-                      <div className="mt-2 h-[3px] w-full bg-[var(--rule-soft)]">
-                        <motion.div
-                          className="h-full bg-[var(--accent)]"
-                          initial={reduce ? false : { width: 0 }}
-                          animate={{ width: `${value as number}%` }}
-                          transition={{ duration: 0.6, ease: EASE }}
-                        />
-                      </div>
-                      <div className="mt-1 font-mono-code text-[9px] uppercase tracking-[0.06em] text-[var(--muted-dim)]">
+                      <ProgressBar value={value as number} color="var(--accent)" className="mt-2" />
+                      <div className="mt-1.5 font-pixel text-[7px] uppercase tracking-[0.02em] text-[var(--muted-dim)]">
                         {caption as string}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <p className="mt-5 text-[13px] leading-relaxed text-[var(--muted)]">
+                <p className="mt-5 text-[12px] leading-[1.8] text-[var(--muted)]">
                   Exceedance estimates describe the chance of crossing an IMD heavy-rain
                   threshold. They are derived from the synthetic corrected series and are not a
                   calibrated impact forecast.
@@ -786,7 +879,7 @@ function TeamSection() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="border-b border-[var(--rule)] bg-[var(--surface)]">
+    <section className="border-b-2 border-[var(--ink)] bg-[var(--surface)]">
       <div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <Reveal>
           <SectionHeader
@@ -801,18 +894,20 @@ function TeamSection() {
               key={m.name}
               variants={fadeItem}
               whileHover={reduce ? undefined : { x: 3 }}
-              className="flex items-center gap-4 border-t border-[var(--rule)] pt-5"
+              className="flex items-center gap-4 border-t-2 border-[var(--ink)] pt-5"
             >
               <Image
                 src={m.avatar}
                 alt=""
                 width={240}
                 height={240}
-                className="w-14 h-14 shrink-0"
+                className="w-14 h-14 shrink-0 border-2 border-[var(--ink)]"
               />
               <div className="min-w-0">
-                <div className="text-[15px] text-[var(--ink)] truncate">{m.name}</div>
-                <div className="mt-0.5 font-mono-code text-[10px] uppercase tracking-[0.07em] text-[var(--muted)]">
+                <div className="font-display text-[17px] leading-tight text-[var(--ink)] truncate">
+                  {m.name}
+                </div>
+                <div className="mt-1 font-pixel text-[8px] uppercase tracking-[0.02em] text-[var(--muted)]">
                   {m.role}
                 </div>
               </div>
