@@ -13,6 +13,8 @@ export type DayInfo = {
   quality: DataQuality;
   /** True when no usable input exists for this region/day. */
   hasData: boolean;
+  /** Where this point came from: local synthetic series or the FastAPI backend. */
+  source?: "local" | "backend";
 };
 
 /* Shape multipliers used to give the demo a plausible 10-day evolution. */

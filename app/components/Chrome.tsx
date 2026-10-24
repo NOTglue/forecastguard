@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { REGIMES, RUN_META, ZONES } from "@/app/data/zones";
 import { Reveal } from "./motion";
 import { Chip, DemoBadge } from "./ui";
+import { useBackend } from "./BackendProvider";
 
 export type Tab = "poster" | "dashboard" | "win32";
 
@@ -63,6 +64,43 @@ function Mark({ className = "" }: { className?: string }) {
       <rect x="1" y="30" width="3" height="1" fill="currentColor" stroke="none" opacity="0.4" />
       <rect x="28" y="30" width="3" height="1" fill="currentColor" stroke="none" opacity="0.4" />
     </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * BackendBadge - live connection state for the FastAPI service.
+ * ------------------------------------------------------------------ */
+function BackendBadge() {
+  const { status, snapshot, refresh } = useBackend();
+
+  const label =
+    status === "online" ? "API live" : status === "loading" ? "API …" : "API offline";
+  const tone =
+    status === "online"
+      ? "text-[var(--accent)] border-[var(--accent)]"
+      : status === "loading"
+        ? "text-[var(--muted)] border-[var(--rule-soft)]"
+        : "text-[var(--coral)] border-[var(--coral)]";
+
+  return (
+    <button
+      type="button"
+      onClick={refresh}
+      title={
+        status === "online"
+          ? `Connected to ${snapshot?.latestRun?.run_id ?? "backend"}`
+          : "Click to retry the backend connection"
+      }
+      className={`hidden sm:inline-flex items-center gap-1.5 border px-1.5 py-0.5 font-pixel text-[8px] uppercase tracking-[0.03em] cursor-pointer transition-colors ${tone}`}
+    >
+      <span
+        className={`h-1.5 w-1.5 ${
+          status === "online" ? "bg-[var(--accent)]" : status === "offline" ? "bg-[var(--coral)]" : "bg-[var(--muted)]"
+        } ${status !== "offline" ? "blink" : ""}`}
+        aria-hidden="true"
+      />
+      {label}
+    </button>
   );
 }
 
@@ -133,6 +171,7 @@ export function AppHeader({
                 Method
               </a>
             ) : null}
+            <BackendBadge />
             <DemoBadge />
           </div>
         </div>
@@ -172,6 +211,13 @@ export function AppHeader({
   );
 }
 
+function formatBackendTime(iso?: string): string {
+  if (!iso) return RUN_META.initTimeIst;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return RUN_META.initTimeIst;
+  return `${date.toISOString().slice(0, 16).replace("T", " ")}Z`;
+}
+
 /* ------------------------------------------------------------------ *
  * StatusStrip — provenance for the current run.
  * ------------------------------------------------------------------ */
@@ -186,19 +232,29 @@ export function StatusStrip({
   priorityCount: number;
   noDataCount: number;
 }) {
+  const { status, snapshot } = useBackend();
+  const online = status === "online" && Boolean(snapshot);
+  const runId = snapshot?.latestRun?.run_id ?? RUN_META.runId;
+  const model = snapshot?.latestRun?.model_version ?? RUN_META.modelVersion;
+  const init = online
+    ? formatBackendTime(snapshot?.latestRun?.initialization_time)
+    : RUN_META.initTimeIst;
+  const regime = snapshot?.latestRun?.cycle_regime;
+
   return (
     <div className="border-b-2 border-[var(--ink)] bg-[var(--ink)] text-[#d8cfb8]">
       <div className="mx-auto max-w-[1240px] px-5 sm:px-8">
         <div className="flex flex-wrap items-center gap-x-7 gap-y-1.5 py-2 font-mono-code text-[10px] tracking-[0.03em]">
           <span className="inline-flex items-center gap-2">
             <span
-              className="w-2 h-2 bg-[var(--mint)] inline-block blink"
+              className={`w-2 h-2 inline-block ${online ? "bg-[var(--mint)] blink" : "bg-[var(--coral)]"}`}
               aria-hidden="true"
             />
-            RUN {RUN_META.runId}
+            RUN {runId}
           </span>
-          <span className="hidden sm:inline">MODEL {RUN_META.modelVersion}</span>
-          <span className="hidden md:inline">INIT {RUN_META.initTimeIst}</span>
+          <span className="hidden sm:inline">MODEL {model}</span>
+          <span className="hidden md:inline">INIT {init}</span>
+          {regime ? <span className="hidden xl:inline">REGIME {regime}</span> : null}
           <span>
             LEAD <strong className="font-medium text-[var(--paper)]">D{day}</strong>
           </span>
@@ -206,6 +262,9 @@ export function StatusStrip({
             FOCUS <strong className="font-medium text-[var(--paper)]">{zoneId}</strong>
           </span>
           <span className="ml-auto inline-flex items-center gap-3">
+            <span className={online ? "text-[var(--mint)]" : "text-[#8f876f]"}>
+              {online ? "BACKEND LIVE" : "LOCAL FALLBACK"}
+            </span>
             <span className="text-[var(--coral)]">{priorityCount} REQUIRE REVIEW</span>
             <span className="text-[#8f876f]">{noDataCount} NO DATA</span>
           </span>
@@ -219,19 +278,29 @@ export function StatusStrip({
  * RunStrip — compact provenance line used inside panels.
  * ------------------------------------------------------------------ */
 export function RunStrip({ day, regime }: { day: number; regime: string }) {
+  const { status, snapshot } = useBackend();
+  const online = status === "online" && Boolean(snapshot);
+  const runId = snapshot?.latestRun?.run_id ?? RUN_META.runId;
+  const generated = online
+    ? formatBackendTime(snapshot?.dataStatus?.last_updated)
+    : RUN_META.generatedAtIst;
+
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 font-mono-code text-[10px] tracking-[0.03em] text-[var(--muted-dim)]">
       <Chip tone="accent">
         D{day} · {regime}
       </Chip>
       <span>
-        run <span className="text-[var(--muted)]">{RUN_META.runId}</span>
+        run <span className="text-[var(--muted)]">{runId}</span>
       </span>
       <span>
-        generated <span className="text-[var(--muted)]">{RUN_META.generatedAtIst}</span>
+        generated <span className="text-[var(--muted)]">{generated}</span>
       </span>
-      <span>
-        request <span className="text-[var(--muted)]">{RUN_META.requestId}</span>
+      <span className="hidden sm:inline">
+        source{" "}
+        <span className="text-[var(--muted)]">
+          {online ? "FastAPI /api/v1" : RUN_META.requestId}
+        </span>
       </span>
     </div>
   );
@@ -241,6 +310,9 @@ export function RunStrip({ day, regime }: { day: number; regime: string }) {
  * Footer
  * ------------------------------------------------------------------ */
 export function Footer() {
+  const { status, snapshot } = useBackend();
+  const online = status === "online" && Boolean(snapshot);
+
   return (
     <footer className="mt-auto border-t-2 border-[var(--ink)] bg-[var(--ink)] text-[#d8cfb8]">
       <div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14">
@@ -257,8 +329,11 @@ export function Footer() {
               Smart India Hackathon 2026, problem statement SIH26079.
             </p>
             <div className="mt-4 flex items-center gap-2 font-pixel text-[8px] uppercase text-[#a9a18b]">
-              <span className="h-2 w-2 bg-[var(--mint)] blink" aria-hidden="true" />
-              Ops station online
+              <span
+                className={`h-2 w-2 ${online ? "bg-[var(--mint)] blink" : "bg-[var(--coral)]"}`}
+                aria-hidden="true"
+              />
+              {online ? "Ops station online · backend linked" : "Ops station online · local data"}
             </div>
           </Reveal>
 
@@ -271,7 +346,9 @@ export function Footer() {
                 <strong className="font-medium text-[var(--paper)]">
                   Every value in this build is synthetic.
                 </strong>{" "}
-                No live NWP run, observation archive or trained model is connected.
+                {online
+                  ? "Values for the four backend sectors are served by the FastAPI demo service; no live NWP run, observation archive or trained model is connected."
+                  : "No live NWP run, observation archive or trained model is connected."}
               </p>
               <p>
                 ForecastGuard does not replace official forecasts or issue warnings. A low
@@ -288,7 +365,7 @@ export function Footer() {
               {RUN_META.thresholdDefinition}
             </p>
             <p className="mt-4 font-mono-code text-[10px] leading-relaxed text-[#8f876f]">
-              {RUN_META.dataSource}
+              {online ? snapshot?.dataStatus?.data_source ?? RUN_META.dataSource : RUN_META.dataSource}
             </p>
           </Reveal>
         </div>
@@ -298,7 +375,21 @@ export function Footer() {
             {ZONES.length} IMD subdivisions · Day 1–10 horizon
           </p>
           <p className="font-mono-code text-[10px] tracking-[0.03em] text-[#8f876f]">
-            {REGIMES.length} synoptic regimes tracked
+            {online ? (
+              <>
+                API{" "}
+                <a
+                  href={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}/docs`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline decoration-dotted underline-offset-2 hover:text-[var(--mint)]"
+                >
+                  {snapshot?.latestRun?.run_id ?? "FastAPI"}
+                </a>
+              </>
+            ) : (
+              `${REGIMES.length} synoptic regimes tracked`
+            )}
           </p>
         </div>
       </div>

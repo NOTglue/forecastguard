@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { EXCEEDANCE_LEVELS, REGIMES, ZONES } from "@/app/data/zones";
 import {
@@ -12,6 +12,7 @@ import {
 import ForecastChart from "./ForecastChart";
 import MapPanel from "./MapPanel";
 import { RunStrip, StatusStrip } from "./Chrome";
+import { useBackend, useBackendTimelines } from "./BackendProvider";
 import { AnimatedNumber, EASE } from "./motion";
 import { Caveat, Chip, DaySelector, MetricToggle, Panel, PanelHeader, ProgressBar, Backdrop } from "./ui";
 
@@ -46,9 +47,13 @@ export default function Dashboard({
   const [sortKey, setSortKey] = useState<SortKey>("bust");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
+  const timelines = useBackendTimelines();
+  const { snapshot, explanations, loadExplanation } = useBackend();
+
   const rows = useMemo(() => {
     const base = ZONES.map((z) => {
-      const info = getZoneTimeline(z, REGIMES)[day - 1];
+      const info =
+        timelines.get(z.id)?.[day - 1] ?? getZoneTimeline(z, REGIMES)[day - 1];
       return { zone: z, info, delta: info.corr - info.raw };
     });
     const usable = base.filter((r) => r.info.hasData);
@@ -67,18 +72,30 @@ export default function Dashboard({
           return (a.info.bust - b.info.bust) * dir;
       }
     });
-  }, [day, sortKey, sortDir]);
+  }, [day, sortKey, sortDir, timelines]);
 
   const zone = ZONES.find((z) => z.id === selectedId) ?? ZONES[0];
-  const timeline = useMemo(() => getZoneTimeline(zone, REGIMES), [zone]);
+  const timeline = timelines.get(zone.id) ?? getZoneTimeline(zone, REGIMES);
   const current = timeline[day - 1];
   const tone = confidenceTone(current.bust);
 
+  const backendRegion = snapshot?.confidenceMap?.regions.find(
+    (region) => region.region_id === zone.id,
+  );
+  const backendRisk = snapshot?.regionRisks[zone.id];
+  const explanation = explanations[zone.id];
+
+  useEffect(() => {
+    if (backendRegion) loadExplanation(zone.id);
+  }, [backendRegion, zone.id, loadExplanation]);
+
   const priorityCount = ZONES.filter((z) => {
-    const info = getZoneTimeline(z, REGIMES)[day - 1];
+    const info = timelines.get(z.id)?.[day - 1] ?? getZoneTimeline(z, REGIMES)[day - 1];
     return info.hasData && info.bust > 60;
   }).length;
-  const noDataCount = ZONES.filter((z) => !getZoneTimeline(z, REGIMES)[day - 1].hasData).length;
+  const noDataCount = ZONES.filter(
+    (z) => !(timelines.get(z.id)?.[day - 1] ?? getZoneTimeline(z, REGIMES)[day - 1]).hasData,
+  ).length;
 
   const toggleSort = (k: SortKey) => {
     if (k === sortKey) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -160,15 +177,18 @@ export default function Dashboard({
           <div className="p-3 grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 xl:grid-cols-[repeat(15,minmax(0,1fr))] gap-1.5">
             {ZONES.map((z) => {
               const active = z.id === selectedId;
-              const info = getZoneTimeline(z, REGIMES)[day - 1];
+              const info =
+                timelines.get(z.id)?.[day - 1] ??
+                getZoneTimeline(z, REGIMES)[day - 1];
               const t = confidenceTone(info.bust);
+              const isBackend = Boolean(snapshot?.confidenceMap?.regions.find((r) => r.region_id === z.id));
               return (
                 <button
                   key={z.id}
                   type="button"
                   onClick={() => onSelect(z.id)}
                   aria-pressed={active}
-                  title={`${z.name} — ${info.hasData ? `${info.bust}% bust` : "no data"}`}
+                  title={`${z.name} — ${info.hasData ? `${info.bust}% bust` : "no data"}${isBackend ? " · backend live" : ""}`}
                   className={`px-1 py-1.5 font-mono-code text-[9px] border truncate cursor-pointer transition-colors ${
                     active
                       ? "accent-bg font-medium"
@@ -402,10 +422,37 @@ export default function Dashboard({
                 <div className="mt-4 border-t border-[var(--rule-soft)] pt-4">
                   <div className="label text-[var(--muted-dim)]">Diagnostic note</div>
                   <p className="mt-2 text-[13px] leading-[1.7] text-[var(--ink-2)]">
-                    {zone.reason}
+                    {explanation?.summary ?? backendRisk?.diagnostic_note ?? zone.reason}
                   </p>
+                  {explanation ? (
+                    <div className="mt-3 space-y-2">
+                      {explanation.key_factors.slice(0, 2).map((factor) => (
+                        <div
+                          key={factor.factor_name}
+                          className="flex items-start justify-between gap-3 border border-[var(--rule-soft)] px-2.5 py-2"
+                        >
+                          <div>
+                            <div className="font-pixel text-[8px] uppercase text-[var(--accent)]">
+                              {factor.factor_name}
+                            </div>
+                            <p className="mt-1 text-[11px] leading-[1.6] text-[var(--ink-2)]">
+                              {factor.description}
+                            </p>
+                          </div>
+                          <span className="font-mono-code text-[10px] text-[var(--muted-dim)]">
+                            {(factor.contribution_score * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                      ))}
+                      <p className="text-[11px] leading-[1.7] text-[var(--muted)]">
+                        {explanation.recommended_action}
+                      </p>
+                    </div>
+                  ) : null}
                   <Caveat className="mt-2.5">
-                    Authored demo copy — not a computed attribution.
+                    {backendRegion
+                      ? "Live from FastAPI backend (synthetic demo). Explanations are diagnostic scaffolds, not a trained model."
+                      : "Authored demo copy — not a computed attribution."}
                   </Caveat>
                 </div>
               </div>

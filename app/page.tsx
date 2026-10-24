@@ -5,6 +5,7 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { ZONES } from "@/app/data/zones";
 import { AppHeader, Footer, type Tab } from "@/app/components/Chrome";
 import { EASE } from "@/app/components/motion";
+import { BackendProvider } from "@/app/components/BackendProvider";
 import Poster from "@/app/components/Poster";
 import Dashboard from "@/app/components/Dashboard";
 import Win32 from "@/app/components/Win32";
@@ -35,8 +36,9 @@ export default function ForecastGuardApp() {
   }, [activeTab]);
 
   return (
-    <MotionConfig reducedMotion="user">
-      <div className="flex min-h-screen flex-col bg-[var(--paper)] text-[var(--ink)]">
+    <BackendProvider>
+      <MotionConfig reducedMotion="user">
+        <div className="flex min-h-screen flex-col bg-[var(--paper)] text-[var(--ink)]">
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-[1000] focus:bg-[var(--accent)] focus:px-3 focus:py-2 focus:font-mono-code focus:text-xs focus:text-[var(--paper)]"
@@ -93,6 +95,7 @@ export default function ForecastGuardApp() {
 
         <Footer />
       </div>
-    </MotionConfig>
+      </MotionConfig>
+    </BackendProvider>
   );
 }
