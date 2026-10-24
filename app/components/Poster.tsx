@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
-import { REGIMES, RUN_META, TEAM, ZONES } from "@/app/data/zones";
+import { REGIMES, ZONES } from "@/app/data/zones";
 import { confidenceLabel, confidenceTone, getZoneTimeline, TONE_COLOR } from "@/app/lib/timeline";
 import { CountUp, ScrubRule } from "./Atmosphere";
 import { EASE, fadeItem, ParallaxBox, Reveal, rowItem, SplitWords, Stagger, staggerParent, AnimatedNumber } from "./motion";
@@ -15,7 +15,6 @@ import {
   Panel,
   ProgressBar,
   SectionHeader,
-  WindowFrame,
 } from "./ui";
 
 type Props = {
@@ -117,20 +116,20 @@ function Hero({
       {/* Same monsoon photograph as the original build, re-rendered as a
           coarse pixel plate and slow-stepped across the hero. */}
       <Backdrop
-        src="/img/bg-hero-pix.jpg"
-        opacity={1}
-        position="50% 55%"
+        src="/img/animated_pixelated_mountain.gif"
+        opacity={0.9}
+        position="50% 50%"
         wash="none"
         priority
         pixelated
         pixelAnim
       />
       <div
-        className="absolute inset-0 z-[1] bg-[linear-gradient(96deg,rgba(243,234,215,.97)_0%,rgba(243,234,215,.92)_38%,rgba(243,234,215,.6)_70%,rgba(243,234,215,.34)_100%)]"
+        className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(243,234,215,.9)_0%,rgba(243,234,215,.75)_40%,rgba(243,234,215,.45)_70%,rgba(243,234,215,.25)_100%)]"
         aria-hidden="true"
       />
       <div
-        className="absolute inset-x-0 bottom-0 z-[1] h-32 bg-[linear-gradient(to_top,rgba(243,234,215,.92),rgba(243,234,215,0))]"
+        className="absolute inset-x-0 bottom-0 z-[1] h-40 bg-[linear-gradient(to_top,rgba(243,234,215,.85),rgba(243,234,215,0))]"
         aria-hidden="true"
       />
       {/* Graph paper, a hard accent bar and a slow radar target in the corner. */}
@@ -143,123 +142,42 @@ function Hero({
       <div className="absolute bottom-0 right-0 h-2 w-28 bg-[var(--accent-2)]" aria-hidden="true" />
 
       <div className="relative z-10 mx-auto max-w-[1240px] px-5 sm:px-8 pt-12 pb-12 md:pt-16 md:pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-center">
-          {/* Copy */}
-          <div className="lg:col-span-6">
-            <motion.div {...enter(0)}>
-              <Eyebrow>SIH26079 // Decision-support prototype</Eyebrow>
-            </motion.div>
+        <motion.div {...enter(0)} />
 
-            <h1 className="font-display mt-5 text-[2.35rem] sm:text-[3rem] lg:text-[3.35rem] uppercase leading-[0.96] tracking-[-0.01em] text-[var(--ink)]">
-              <SplitWords text="Know where the" delay={0.1} />
-              <br />
-              <SplitWords text="forecast is" delay={0.22} />
-              <br />
-              <span className="pixel-highlight mt-1 inline-block">
-                <SplitWords text="likely to fail" delay={0.34} />
-              </span>
-            </h1>
+        <h1 className="font-display mt-4 text-[2.6rem] sm:text-[3.6rem] lg:text-[4.6rem] xl:text-[5.6rem] leading-[0.95] tracking-[-0.02em] text-[var(--ink)]">
+          <SplitWords text="Know where the forecast is" delay={0.1} />
+          <br />
+          <span className="mt-1 inline-block text-[var(--accent)]">
+            <SplitWords text="likely to fail" delay={0.22} />
+          </span>
+        </h1>
 
-            <motion.p
-              {...enter(0.46)}
-              className="mt-6 max-w-[33rem] text-[13px] leading-[1.8] text-[var(--ink-2)]"
-            >
-              ForecastGuard estimates the probability that a medium-range rainfall forecast
-              will be substantially wrong — by subdivision, by lead day, and by synoptic
-              regime — so limited review effort goes where it matters most.
-            </motion.p>
+        <motion.p
+          {...enter(0.46)}
+          className="mt-6 max-w-[33rem] text-[13px] leading-[1.8] text-[var(--ink-2)]"
+        >
+          ForecastGuard estimates the probability that a medium-range rainfall forecast
+          will be substantially wrong — by subdivision, by lead day, and by synoptic
+          regime — so limited review effort goes where it matters most.
+        </motion.p>
 
-            <motion.div
-              {...enter(0.55)}
-              className="mt-8 flex flex-wrap items-center gap-3"
-            >
-              <button
-                type="button"
-                onClick={onOpenDashboard}
-                className="pixel-btn pixel-btn--primary"
-              >
-                Open dashboard
-                <span aria-hidden="true">→</span>
-              </button>
-              <button type="button" onClick={onOpenWin32} className="pixel-btn">
-                Ops console
-                <span aria-hidden="true">▚</span>
-              </button>
-            </motion.div>
-
-            <motion.div {...enter(0.63)} className="mt-7 flex flex-wrap items-center gap-2">
-              <div className="inline-flex flex-wrap items-center gap-x-2.5 border border-[var(--ink)] bg-[var(--surface)] px-2.5 py-1.5 shadow-[2px_2px_0_var(--ink)]">
-                <span className="h-2 w-2 bg-[var(--accent)] blink" aria-hidden="true" />
-                <span className="font-pixel text-[8px] uppercase text-[var(--ink)]">
-                  Simulated run
-                </span>
-                <span className="font-mono-code text-[9px] text-[var(--muted)]">
-                  {RUN_META.runId}
-                </span>
-              </div>
-            </motion.div>
-
-            <motion.div {...enter(0.7)} className="mt-7 grid grid-cols-4 gap-2 max-w-[360px]">
-              {SIGNALS.map((s) => (
-                <div
-                  key={s.label}
-                  className="border border-[var(--ink)] bg-[var(--surface)] px-2 py-2"
-                >
-                  <PixelIcon kind={s.kind} />
-                  <div className="mt-1 font-pixel text-[7px] uppercase text-[var(--muted)]">
-                    {s.label}
-                  </div>
-                  <div className="font-mono-code text-[10px] text-[var(--ink)] tnum">
-                    {s.value}
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Radar plate */}
-          <div className="lg:col-span-6">
-            <motion.figure
-              initial={reduce ? false : { opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.75, delay: 0.15, ease: EASE }}
-            >
-              <WindowFrame
-                title="RADAR-9 // Watch areas"
-                meta="D1–D10"
-                bodyClassName="screen-dark relative overflow-hidden"
-              >
-                <Image
-                  src="/img/hero-pixel.svg"
-                  alt="Pixel-art radar map of India showing the fifteen monitored meteorological subdivisions as bright blocks over a dark grid."
-                  width={1000}
-                  height={760}
-                  priority
-                  className="block h-auto w-full"
-                />
-                <span
-                  className="pointer-events-none absolute inset-0 scanlines"
-                  aria-hidden="true"
-                />
-                {reduce ? null : (
-                  <motion.span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-[var(--paper)]"
-                    initial={{ x: "0%" }}
-                    animate={{ x: "101%" }}
-                    transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
-                  />
-                )}
-              </WindowFrame>
-              <figcaption className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                <span className="font-mono-code text-[9px] tracking-[0.04em] text-[var(--muted)]">
-                  FIG. 1 — 15 SUBDIVISIONS / 4 ACTIVE CELLS
-                </span>
-                <Chip tone="warn">Simulated</Chip>
-              </figcaption>
-            </motion.figure>
-          </div>
-        </div>
+        <motion.div
+          {...enter(0.55)}
+          className="mt-8 flex flex-wrap items-center gap-3"
+        >
+          <button
+            type="button"
+            onClick={onOpenDashboard}
+            className="pixel-btn pixel-btn--primary"
+          >
+            Open dashboard
+            <span aria-hidden="true">→</span>
+          </button>
+          <button type="button" onClick={onOpenWin32} className="pixel-btn">
+            Ops console
+            <span aria-hidden="true">▚</span>
+          </button>
+        </motion.div>
       </div>
 
       {/* Key figures */}
@@ -331,7 +249,13 @@ function Method() {
 
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          <Reveal className="lg:col-span-5">
+          <motion.div
+            className="lg:col-span-5"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
             <Eyebrow>Why this exists</Eyebrow>
             <ScrubRule className="mt-5 w-24" tone="accent" />
             <h2 className="font-display mt-5 text-[1.8rem] sm:text-[2.15rem] leading-[1.02] text-[var(--ink)]">
@@ -365,9 +289,55 @@ function Method() {
                 prediction of impact.”
               </p>
             </div>
-          </Reveal>
+          </motion.div>
 
           <div className="lg:col-span-7">
+            <Reveal delay={0.08}>
+              <Panel className="p-6 sm:p-8">
+                <div className="flex items-center justify-between gap-3 border-b-2 border-[var(--ink)] pb-4">
+                  <div>
+                    <div className="font-pixel text-[10px] uppercase tracking-[0.05em] text-[var(--muted)]">
+                      Field note
+                    </div>
+                    <div className="mt-1 font-display text-[1.25rem] leading-tight text-[var(--ink)]">
+                      Uneven skill, uneven risk
+                    </div>
+                  </div>
+                  <Chip tone="warn">Bust risk</Chip>
+                </div>
+                <div className="mt-5 space-y-3 text-[13px] leading-[1.8] text-[var(--ink-2)]">
+                  <p>
+                    Along the coast and hills, small errors in timing or location can shift
+                    heavy rain bands enough to miss or overstate totals.
+                  </p>
+                  <p>
+                    Inland, some regimes are more stable. The gap between those cases is where
+                    review time is best spent.
+                  </p>
+                </div>
+                <div className="mt-6 grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Coastal", value: "High" },
+                    { label: "Hills", value: "High" },
+                    { label: "Interior", value: "Lower" },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="border border-[var(--ink)] bg-[var(--surface-2)] px-3 py-2 text-center"
+                    >
+                      <div className="font-pixel text-[8px] uppercase text-[var(--muted)]">
+                        {item.label}
+                      </div>
+                      <div className="mt-1 font-display text-[1.1rem] text-[var(--ink)]">
+                        {item.value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+            </Reveal>
+
+            <ScrubRule className="mt-8" />
             <Reveal delay={0.08}>
               <figure className="pixel-window">
                 <Image
@@ -425,12 +395,18 @@ function ReadingKey() {
 
   return (
     <section className="relative overflow-hidden border-b-2 border-[var(--ink)]">
-      <Backdrop src="/img/bg-band-pix.jpg" opacity={1} position="50% 60%" wash="none" priority pixelated pixelAnim />
-      <div className="absolute inset-0 bg-[linear-gradient(94deg,rgba(243,234,215,.98)_0%,rgba(243,234,215,.94)_38%,rgba(243,234,215,.72)_64%,rgba(243,234,215,.5)_100%)]" />
+      <Backdrop src="/img/bg-band-pix.jpg" opacity={0.85} position="50% 55%" wash="none" priority pixelated pixelAnim />
+      <div className="absolute inset-0 bg-[linear-gradient(94deg,rgba(243,234,215,.88)_0%,rgba(243,234,215,.7)_40%,rgba(243,234,215,.4)_70%,rgba(243,234,215,.25)_100%)]" />
 
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-          <Reveal className="lg:col-span-4">
+          <motion.div
+            className="lg:col-span-4"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
             <Eyebrow>Reading key</Eyebrow>
             <h2 className="font-display mt-5 text-[1.8rem] leading-[1.02] text-[var(--ink)]">
               Four bands, one review decision behind each.
@@ -439,7 +415,7 @@ function ReadingKey() {
               Bust probability is shown as a band rather than a decimal because the
               underlying calibration does not support finer resolution.
             </p>
-          </Reveal>
+          </motion.div>
 
           <div className="lg:col-span-8">
             <motion.dl
@@ -453,7 +429,7 @@ function ReadingKey() {
                 <motion.div
                   key={band.tone}
                   variants={fadeItem}
-                  whileHover={reduce ? undefined : { y: -2 }}
+                  whileHover={reduce ? undefined : { y: -3, transition: { duration: 0.2 } }}
                   className="border-t-2 border-[var(--ink)] py-4"
                 >
                   <dt>
@@ -512,13 +488,18 @@ function SubdivisionSection({
   return (
     <section className="border-b-2 border-[var(--ink)] bg-[var(--surface)]">
       <div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
-        <Reveal>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: EASE }}
+        >
           <SectionHeader
             title="Subdivisions ranked by bust probability"
             lede="Each row is one IMD subdivision for the selected lead day. Select a row to inspect its full telemetry."
             right={<DaySelector day={day} onChange={onDayChange} />}
           />
-        </Reveal>
+        </motion.div>
 
         <ScrubRule className="mt-8" />
 
@@ -546,6 +527,7 @@ function SubdivisionSection({
                   key={zone.id}
                   layout="position"
                   variants={rowItem}
+                  whileHover={{ x: 6, transition: { duration: 0.2 } }}
                   exit={{ opacity: 0 }}
                   type="button"
                   onClick={() => {
@@ -613,19 +595,30 @@ function SubdivisionSection({
 function Capabilities() {
   return (
     <section className="relative overflow-hidden border-b-2 border-[var(--ink)]">
-      <Backdrop src="/img/bg-satellite-pix.jpg" opacity={1} position="50% 40%" wash="none" pixelated pixelAnim />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(243,234,215,.94)_0%,rgba(243,234,215,.78)_26%,rgba(243,234,215,.78)_74%,rgba(243,234,215,.96)_100%)]" />
+      <Backdrop src="/img/pixel-cyclone-bay-of-bengal.png" opacity={0.9} position="50% 40%" wash="none" pixelated pixelAnim />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(243,234,215,.88)_0%,rgba(243,234,215,.7)_30%,rgba(243,234,215,.7)_70%,rgba(243,234,215,.9)_100%)]" />
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
-        <Reveal>
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.7, ease: EASE }}
+        >
           <SectionHeader
             title="Two ways to work the same data"
             lede="A spatial view for situational awareness and a dense console for keyboard-driven analysis. Both read from one synthetic dataset."
             className="mb-10"
           />
-        </Reveal>
+        </motion.div>
 
         <div className="space-y-12">
-          <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <motion.article
+            className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.8, ease: EASE }}
+          >
             <ParallaxBox className="lg:col-span-6" distance={16}>
               <figure className="pixel-window">
                 <Image
@@ -675,9 +668,15 @@ function Capabilities() {
                 ))}
               </motion.ul>
             </div>
-          </article>
+          </motion.article>
 
-          <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <motion.article
+            className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
+          >
             <ParallaxBox className="lg:col-span-6 lg:order-2" distance={16}>
               <figure className="pixel-window">
                 <Image
@@ -719,7 +718,7 @@ function Capabilities() {
                 ))}
               </Stagger>
             </div>
-          </article>
+          </motion.article>
         </div>
       </div>
     </section>
@@ -748,7 +747,13 @@ function RegionDetail({
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(233,223,201,.94)_0%,rgba(233,223,201,.66)_35%,rgba(233,223,201,.82)_100%)]" />
       <div className="relative mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <Reveal className="lg:col-span-7">
+          <motion.div
+            className="lg:col-span-7"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, ease: EASE }}
+          >
             <Panel className="p-6 sm:p-8">
               <Eyebrow>Selected subdivision</Eyebrow>
               <motion.div
@@ -816,9 +821,15 @@ function RegionDetail({
                 <span aria-hidden="true">→</span>
               </button>
             </Panel>
-          </Reveal>
+          </motion.div>
 
-          <Reveal className="lg:col-span-5 flex" delay={0.08}>
+          <motion.div
+            className="lg:col-span-5 flex"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
+          >
             <Panel className="flex flex-col w-full">
               <div className="flex items-center justify-between gap-3 px-5 py-3 border-b-2 border-[var(--ink)] bg-[var(--surface-2)]">
                 <span className="font-pixel text-[10px] uppercase tracking-[0.02em] text-[var(--ink)]">
@@ -865,55 +876,8 @@ function RegionDetail({
                 <Caveat>Day 6–10 has no verifying observation, so bust risk is unverified there.</Caveat>
               </div>
             </Panel>
-          </Reveal>
+          </motion.div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ *
- * Team
- * ------------------------------------------------------------------ */
-function TeamSection() {
-  const reduce = useReducedMotion();
-
-  return (
-    <section className="border-b-2 border-[var(--ink)] bg-[var(--surface)]">
-      <div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 md:py-20">
-        <Reveal>
-          <SectionHeader
-            title="The team"
-            lede="Built by three people over the course of the hackathon."
-            className="mb-8"
-          />
-        </Reveal>
-        <Stagger className="grid grid-cols-1 sm:grid-cols-3 gap-6" amount={0.4}>
-          {TEAM.map((m) => (
-            <motion.div
-              key={m.name}
-              variants={fadeItem}
-              whileHover={reduce ? undefined : { x: 3 }}
-              className="flex items-center gap-4 border-t-2 border-[var(--ink)] pt-5"
-            >
-              <Image
-                src={m.avatar}
-                alt=""
-                width={240}
-                height={240}
-                className="w-14 h-14 shrink-0 border-2 border-[var(--ink)]"
-              />
-              <div className="min-w-0">
-                <div className="font-display text-[17px] leading-tight text-[var(--ink)] truncate">
-                  {m.name}
-                </div>
-                <div className="mt-1 font-pixel text-[8px] uppercase tracking-[0.02em] text-[var(--muted)]">
-                  {m.role}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </Stagger>
       </div>
     </section>
   );
@@ -944,7 +908,6 @@ export default function Poster(props: Props) {
         day={props.day}
         onOpenDashboard={props.onOpenDashboard}
       />
-      <TeamSection />
     </main>
   );
 }

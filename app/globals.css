@@ -9,34 +9,34 @@
  * screen-printed instrument panel.
  * ------------------------------------------------------------------ */
 :root {
-  --paper: #f3ead7;
-  --paper-2: #e9dfc9;
+  --paper: #F3EAD5;
+  --paper-2: #EAE0C9;
   --surface: #fbf6e9;
   --surface-2: #f0e7d4;
   --surface-3: #e2d5bb;
 
-  --ink: #17201d;
+  --ink: #14211D;
   --ink-2: #33403a;
   --muted: #56645d;
   --muted-dim: #5a665f;
 
-  --rule: #17201d;
-  --rule-soft: #cdbfa4;
+  --rule: #14211D;
+  --rule-soft: #CFC4AC;
 
-  --accent: #0c6b5c;
-  --accent-ink: #074a40;
-  --accent-2: #a63c0a;
+  --accent: #087A68;
+  --accent-ink: #066454;
+  --accent-2: #D5B66A;
 
   /* storm ramp — every value passes AA on paper */
-  --risk-0: #1d6f47;
-  --risk-1: #8a5a09;
-  --risk-2: #b44410;
-  --risk-3: #a9221d;
+  --risk-0: #64DDB0;
+  --risk-1: #D97732;
+  --risk-2: #C84B32;
+  --risk-3: #C84B32;
 
   /* phosphor palette, only used inside dark screens */
-  --screen: #0b1719;
+  --screen: #0A1715;
   --screen-2: #101f22;
-  --screen-line: #1f3a38;
+  --screen-line: #23443B;
   --mint: #7dfcbf;
   --mint-dim: #4fbf93;
   --signal: #ffc857;
@@ -88,16 +88,16 @@ body {
  * Typography
  * ------------------------------------------------------------------ */
 .font-display {
-  font-family: var(--font-pixel-display), "Pixelify Sans", ui-monospace, monospace;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--font-pixel-display), "Space Grotesk", system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   text-transform: none;
 }
 
 .font-pixel {
-  font-family: var(--font-pixel-label), "Silkscreen", ui-monospace, monospace;
-  font-weight: 400;
-  letter-spacing: 0.06em;
+  font-family: var(--font-pixel-label), "Inter", system-ui, -apple-system, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 .font-mono-code {

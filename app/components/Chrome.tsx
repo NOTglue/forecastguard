@@ -293,18 +293,9 @@ export function Footer() {
           </Reveal>
         </div>
 
-        <div className="mt-10 pt-5 border-t border-[#3c453f]">
-          <p className="font-mono-code text-[10px] leading-[1.9] tracking-[0.02em] text-[#8f876f]">
-            Pixel artwork, maps and charts are generated locally by{" "}
-            <span className="text-[var(--mint-dim)]">scripts/generate-assets.mjs</span>. Type
-            set in Pixelify Sans, Silkscreen and IBM Plex Mono. Basemap tiles © OpenStreetMap
-            contributors.
-          </p>
-        </div>
-
-        <div className="mt-6 pt-5 border-t border-[#3c453f] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <div className="mt-10 pt-5 border-t border-[#3c453f] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <p className="font-mono-code text-[10px] tracking-[0.03em] text-[#8f876f]">
-            Team 2 · SIH26079 · {ZONES.length} IMD subdivisions · Day 1–10 horizon
+            {ZONES.length} IMD subdivisions · Day 1–10 horizon
           </p>
           <p className="font-mono-code text-[10px] tracking-[0.03em] text-[#8f876f]">
             {REGIMES.length} synoptic regimes tracked
